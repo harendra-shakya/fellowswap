@@ -6,7 +6,6 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 contract P2P is ReentrancyGuard {
-
     struct Listing {
         address from;
         address to;
@@ -64,6 +63,23 @@ contract P2P is ReentrancyGuard {
             abi.encodeWithSelector(TF_SELECTOR, from, to, amount)
         );
         require(success && (data.length == 0 || abi.decode(data, (bool))), "Transfer Failed!");
+    }
+
+    function updateListing(
+        address _from,
+        address _to,
+        uint256 _fromTokens,
+        uint256 _toTokens,
+        uint256 _limit
+    ) external isEnoughToken(_fromTokens, _toTokens, _from, msg.sender) {
+        listings[msg.sender][_from][_to] = Listing(
+            _from,
+            _to,
+            _fromTokens,
+            _toTokens,
+            _limit,
+            msg.sender
+        );
     }
 
     function listToken(
