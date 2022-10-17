@@ -18,6 +18,30 @@ contract P2P is ReentrancyGuard {
         address seller;
     }
 
+    event ListToken(
+        address indexed seller,
+        address indexed fromToken,
+        address indexed toToken,
+        uint256 price,
+        uint256 amount,
+        uint256 limit
+    );
+
+    event BuyToken(
+        address indexed buyer,
+        address indexed fromToken,
+        address indexed seller,
+        address toToken,
+        uint256 boughtTokens,
+        uint256 soldToken
+    );
+
+    event CancelListing(
+        address indexed seller,
+        address indexed fromToken,
+        address indexed toToken
+    );
+
     modifier notListed(
         address _fromToken,
         address _toToken,
@@ -82,6 +106,7 @@ contract P2P is ReentrancyGuard {
         uint256 _limit
     ) external isEnoughToken(_price, _amount, _fromToken, msg.sender) {
         listings[msg.sender][_fromToken][_toToken] = Listing(_price, _amount, _limit, msg.sender);
+        emit ListToken(msg.sender, _fromToken, _toToken, _price, _amount, _limit);
     }
 
     function listToken(
@@ -96,6 +121,7 @@ contract P2P is ReentrancyGuard {
         isEnoughToken(_price, _amount, _fromToken, msg.sender)
     {
         listings[msg.sender][_fromToken][_toToken] = Listing(_price, _amount, _limit, msg.sender); // from and to are tokens
+        emit ListToken(msg.sender, _fromToken, _toToken, _price, _amount, _limit);
     }
 
     function buyToken(
@@ -116,6 +142,7 @@ contract P2P is ReentrancyGuard {
 
         _safeTranfer(_toToken, msg.sender, amount);
         _safeTranfer(_fromToken, _seller, amount2);
+        emit BuyToken(msg.sender, _fromToken, _seller, _toToken, _amount, amount2);
     }
 
     function cancelListing(
@@ -123,5 +150,6 @@ contract P2P is ReentrancyGuard {
         address _toToken
     ) external isListed(_fromToken, _toToken, msg.sender) {
         delete listings[msg.sender][_fromToken][_toToken];
+        emit CancelListing(msg.sender, _fromToken, _toToken);
     }
 }
