@@ -6,7 +6,6 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 contract P2P is ReentrancyGuard {
-
     struct Listing {
         uint256 price;
         uint256 amount;
@@ -21,6 +20,16 @@ contract P2P is ReentrancyGuard {
     ) {
         Listing memory listing = listings[_seller][_from][_to];
         require(listing.price == 0, "P2P: Already listed");
+        _;
+    }
+
+    modifier isListed(
+        address _from,
+        address _to,
+        address _seller
+    ) {
+        Listing memory listing = listings[_seller][_from][_to];
+        require(listing.price > 0, "P2P: Not listed");
         _;
     }
 
@@ -71,12 +80,7 @@ contract P2P is ReentrancyGuard {
         uint256 _toTokens,
         uint256 _limit
     ) external isEnoughToken(_fromTokens, _toTokens, _from, msg.sender) {
-        listings[msg.sender][_from][_to] = Listing(
-            _fromTokens,
-            _toTokens,
-            _limit,
-            msg.sender
-        );
+        listings[msg.sender][_from][_to] = Listing(_fromTokens, _toTokens, _limit, msg.sender);
     }
 
     function listToken(
@@ -90,12 +94,7 @@ contract P2P is ReentrancyGuard {
         notListed(_from, _to, msg.sender)
         isEnoughToken(_fromTokens, _toTokens, _from, msg.sender)
     {
-        listings[msg.sender][_from][_to] = Listing(
-            _fromTokens,
-            _toTokens,
-            _limit,
-            msg.sender
-        ); // from and to are tokens
+        listings[msg.sender][_from][_to] = Listing(_fromTokens, _toTokens, _limit, msg.sender); // from and to are tokens
     }
 
     function buyToken(
@@ -103,9 +102,8 @@ contract P2P is ReentrancyGuard {
         address _to,
         address _seller,
         uint256 _amount
-    ) external {
+    ) external isListed(_from, _to, _seller) {
         Listing memory listing = listings[_seller][_to][_from];
-        require(listing.price != 0, "P2P: Listing not exists");
         require(listing.limit >= _amount && _amount <= listing.amount, "P2P: Out of limit");
 
         // `seller from` = `buyer to` and vice versa
