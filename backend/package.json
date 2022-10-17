@@ -1,5 +1,5 @@
 {
-    "name": "easype-backend",
+    "name": "p2p-backend",
     "version": "1.0.0",
     "description": "",
     "scripts": {
@@ -7,7 +7,9 @@
         "format": "prettier --write .",
         "coverage": "hardhat coverage --solcoverjs ./.solcover.js",
         "slither": "slither ./contracts --solc-remaps '@openzeppelin=node_modules/@openzeppelin @chainlink=node_modules/@chainlink' --exclude naming-convention,external-function,low-level-calls --buidler-ignore-compile",
-        "shorthand": "npm install --global hardhat-shorthand"
+        "shorthand": "npm install --global hardhat-shorthand",
+        "c": "hardhat compile",
+        "d": "hardhat deploy"
     },
     "license": "MIT",
     "devDependencies": {

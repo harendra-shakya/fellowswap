@@ -129,7 +129,7 @@ contract P2P is ReentrancyGuard {
         address _toToken,
         address _seller,
         uint256 _amount
-    ) external isListed(_fromToken, _toToken, _seller) {
+    ) external isListed(_fromToken, _toToken, _seller) nonReentrant {
         Listing memory listing = listings[_seller][_toToken][_fromToken];
         require(listing.limit >= _amount && _amount <= listing.amount, "P2P: Out of limit");
 
@@ -151,5 +151,9 @@ contract P2P is ReentrancyGuard {
     ) external isListed(_fromToken, _toToken, msg.sender) {
         delete listings[msg.sender][_fromToken][_toToken];
         emit CancelListing(msg.sender, _fromToken, _toToken);
+    }
+
+    function getListing(address _seller, address _fromToken, address _toToken) external view returns (Listing memory) {
+        return listings[_seller][_fromToken][_toToken];
     }
 }
