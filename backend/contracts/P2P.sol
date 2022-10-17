@@ -6,11 +6,10 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 contract P2P is ReentrancyGuard {
+
     struct Listing {
-        address from;
-        address to;
-        uint256 fromTokens;
-        uint256 toTokens;
+        uint256 price;
+        uint256 amount;
         uint256 limit;
         address seller;
     }
@@ -21,7 +20,7 @@ contract P2P is ReentrancyGuard {
         address _seller
     ) {
         Listing memory listing = listings[_seller][_from][_to];
-        require(listing.fromTokens == 0, "P2P: Already listed");
+        require(listing.price == 0, "P2P: Already listed");
         _;
     }
 
@@ -73,8 +72,6 @@ contract P2P is ReentrancyGuard {
         uint256 _limit
     ) external isEnoughToken(_fromTokens, _toTokens, _from, msg.sender) {
         listings[msg.sender][_from][_to] = Listing(
-            _from,
-            _to,
             _fromTokens,
             _toTokens,
             _limit,
@@ -94,8 +91,6 @@ contract P2P is ReentrancyGuard {
         isEnoughToken(_fromTokens, _toTokens, _from, msg.sender)
     {
         listings[msg.sender][_from][_to] = Listing(
-            _from,
-            _to,
             _fromTokens,
             _toTokens,
             _limit,
@@ -110,14 +105,17 @@ contract P2P is ReentrancyGuard {
         uint256 _amount
     ) external {
         Listing memory listing = listings[_seller][_to][_from];
-        require(listing.fromTokens != 0, "P2P: Listing not exists");
-        require(listing.limit >= _amount && _amount <= listing.fromTokens, "P2P: Out of limit");
-        _safeTranferFrom(_from, msg.sender, address(this), _amount);
+        require(listing.price != 0, "P2P: Listing not exists");
+        require(listing.limit >= _amount && _amount <= listing.amount, "P2P: Out of limit");
 
-        _safeTranferFrom(_to, _seller, address(this), _amount);
+        // `seller from` = `buyer to` and vice versa
+        _safeTranferFrom(_from, msg.sender, address(this), listing.price * _amount); // buyer -> contract
+        _safeTranferFrom(_to, _seller, address(this), _amount); // seller -> contract
 
-        uint256 amount = (_amount * 9995) / 10000; // fee
+        uint256 amount = (_amount * 9998) / 10000; // fee
+        uint256 amount2 = (listing.price * _amount * 9998) / 10000; // fee
 
         _safeTranfer(_to, msg.sender, amount);
+        _safeTranfer(_from, _seller, amount2);
     }
 }
