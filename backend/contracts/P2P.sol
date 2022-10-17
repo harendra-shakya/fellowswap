@@ -116,4 +116,11 @@ contract P2P is ReentrancyGuard {
         _safeTranfer(_to, msg.sender, amount);
         _safeTranfer(_from, _seller, amount2);
     }
+
+    function cancelListing(
+        address _from,
+        address _to
+    ) external isListed(_from, _to, msg.sender) {
+        delete listings[msg.sender][_from][_to];
+    }
 }
