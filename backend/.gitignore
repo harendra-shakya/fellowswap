@@ -9,6 +9,9 @@ node_modules
 coverage
 coverage.json
 
+#foundry
+forge-cache
+
 # don't push the environment vars!
 .env
 
