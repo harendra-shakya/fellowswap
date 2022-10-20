@@ -4,12 +4,9 @@ pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "./libraries/TransferHelpers.sol";
 
 contract P2P is ReentrancyGuard {
-    bytes4 private constant T_SELECTOR = bytes4(keccak256(bytes("transfer(address,uint256)")));
-    bytes4 private constant TF_SELECTOR =
-        bytes4(keccak256(bytes("transferFrom(address,address,uint256)")));
-
     struct Listing {
         uint256 price;
         uint256 amount;
@@ -41,10 +38,7 @@ contract P2P is ReentrancyGuard {
         address indexed toToken
     );
 
-    modifier notListed(
-        address _fromToken,
-        address _toToken
-    ) {
+    modifier notListed(address _fromToken, address _toToken) {
         Listing memory listing = listings[msg.sender][_fromToken][_toToken];
         require(listing.price == 0, "P2P: Already listed");
         _;
@@ -72,34 +66,14 @@ contract P2P is ReentrancyGuard {
         address _fromToken
     ) {
         require(_price > 0 && _amount > 0, "P2P: Invalid Price");
-        require(IERC20(_fromToken).balanceOf(msg.sender) >= _amount, "P2P: Not have enough tokens");
+        require(
+            IERC20(_fromToken).balanceOf(msg.sender) >= _amount,
+            "P2P: Not have enough tokens"
+        );
         _;
     }
 
     mapping(address => mapping(address => mapping(address => Listing))) private listings;
-
-    function _safeTranfer(
-        address token,
-        address to,
-        uint256 amount
-    ) internal {
-        (bool success, bytes memory data) = token.call(
-            abi.encodeWithSelector(T_SELECTOR, to, amount)
-        );
-        require(success && (data.length == 0 || abi.decode(data, (bool))), "Transfer Failed!");
-    }
-
-    function _safeTranferFrom(
-        address token,
-        address from,
-        address to,
-        uint256 amount
-    ) internal {
-        (bool success, bytes memory data) = token.call(
-            abi.encodeWithSelector(TF_SELECTOR, from, to, amount)
-        );
-        require(success && (data.length == 0 || abi.decode(data, (bool))), "Transfer Failed!");
-    }
 
     function updateListing(
         address _seller,
@@ -114,12 +88,7 @@ contract P2P is ReentrancyGuard {
         if (_amount > IERC20(_fromToken).balanceOf(_seller) || _amount == 0) {
             delete listings[_seller][_fromToken][_toToken];
         } else {
-            listings[_seller][_fromToken][_toToken] = Listing(
-                _price,
-                _amount,
-                _limit,
-                _seller
-            );
+            listings[_seller][_fromToken][_toToken] = Listing(_price, _amount, _limit, _seller);
         }
         emit ListToken(_seller, _fromToken, _toToken, _price, _amount, _limit);
     }
@@ -130,11 +99,8 @@ contract P2P is ReentrancyGuard {
         uint256 _price,
         uint256 _amount,
         uint256 _limit
-    )
-        external
-        notListed(_fromToken, _toToken)
-        isEnoughToken(_price, _amount, _fromToken)
-    {
+    ) external notListed(_fromToken, _toToken) isEnoughToken(_price, _amount, _fromToken) {
+        require(_amount >= _limit, "P2P: Limit should be less than amount");
         listings[msg.sender][_fromToken][_toToken] = Listing(_price, _amount, _limit, msg.sender); // from and to are tokens
         emit ListToken(msg.sender, _fromToken, _toToken, _price, _amount, _limit);
     }
@@ -146,17 +112,22 @@ contract P2P is ReentrancyGuard {
         uint256 _amount
     ) external isListed(_fromToken, _toToken, _seller) nonReentrant {
         Listing memory listing = listings[_seller][_toToken][_fromToken];
-        require(_amount >= listing.limit  && _amount <= listing.amount, "P2P: Out of limit");
+        require(_amount >= listing.limit && _amount <= listing.amount, "P2P: Out of limit");
 
         // `seller from` = `buyer to` and vice versa
-        _safeTranferFrom(_fromToken, msg.sender, address(this), listing.price * _amount); // buyer -> contract
-        _safeTranferFrom(_toToken, _seller, address(this), _amount); // seller -> contract
+        TransferHelpers.safeTranferFrom(
+            _fromToken,
+            msg.sender,
+            address(this),
+            listing.price * _amount
+        ); // buyer -> contract
+        TransferHelpers.safeTranferFrom(_toToken, _seller, address(this), _amount); // seller -> contract
 
         uint256 amount = (_amount * 9998) / 10000; // fee
         uint256 amount2 = (listing.price * _amount * 9998) / 10000; // fee
 
-        _safeTranfer(_toToken, msg.sender, amount);
-        _safeTranfer(_fromToken, _seller, amount2);
+        TransferHelpers.safeTranfer(_toToken, msg.sender, amount);
+        TransferHelpers.safeTranfer(_fromToken, _seller, amount2);
 
         updateListing(_seller, _fromToken, _toToken, listing.price, _amount, listing.limit);
         emit BuyToken(msg.sender, _fromToken, _seller, _toToken, _amount, amount2);
