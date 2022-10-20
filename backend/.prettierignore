@@ -8,3 +8,7 @@ img
 .*
 README.md
 deployments
+out
+lib
+typechain
+forge-cache

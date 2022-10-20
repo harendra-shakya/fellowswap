@@ -14,7 +14,7 @@ contract P2P is ReentrancyGuard {
         address seller;
     }
 
-    event ListToken(
+    event ListToken (
         address indexed seller,
         address indexed fromToken,
         address indexed toToken,
@@ -65,7 +65,8 @@ contract P2P is ReentrancyGuard {
         uint256 _amount,
         address _fromToken
     ) {
-        require(_price > 0 && _amount > 0, "P2P: Invalid Price");
+        require(_price > 0, "P2P: Invalid Price");
+        require(_amount > 0, "P2P: Invalid Amount");
         require(
             IERC20(_fromToken).balanceOf(msg.sender) >= _amount,
             "P2P: Not have enough tokens"
@@ -101,7 +102,14 @@ contract P2P is ReentrancyGuard {
         uint256 _limit
     ) external notListed(_fromToken, _toToken) isEnoughToken(_price, _amount, _fromToken) {
         require(_amount >= _limit, "P2P: Limit should be less than amount");
-        listings[msg.sender][_fromToken][_toToken] = Listing(_price, _amount, _limit, msg.sender); // from and to are tokens
+        Listing memory listing;
+        listing.price = _price;
+        listing.amount = _amount;
+        listing.limit = _limit;
+        listing.seller = msg.sender;
+
+        listings[msg.sender][_fromToken][_toToken] = listing;
+        // listings[msg.sender][_fromToken][_toToken] = Listing(_price, _amount, _limit, msg.sender); // from and to are tokens
         emit ListToken(msg.sender, _fromToken, _toToken, _price, _amount, _limit);
     }
 

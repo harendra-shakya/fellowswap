@@ -6,20 +6,13 @@ import "./Vm.sol";
 
 // Helpers for parsing keys into types.
 library stdJson {
-
     Vm private constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 
-    function parseRaw(string memory json, string memory key)
-        internal
-        returns (bytes memory)
-    {
+    function parseRaw(string memory json, string memory key) internal returns (bytes memory) {
         return vm.parseJson(json, key);
     }
 
-    function readUint(string memory json, string memory key)
-        internal
-        returns (uint256)
-    {
+    function readUint(string memory json, string memory key) internal returns (uint256) {
         return abi.decode(vm.parseJson(json, key), (uint256));
     }
 
@@ -30,10 +23,7 @@ library stdJson {
         return abi.decode(vm.parseJson(json, key), (uint256[]));
     }
 
-    function readInt(string memory json, string memory key)
-        internal
-        returns (int256)
-    {
+    function readInt(string memory json, string memory key) internal returns (int256) {
         return abi.decode(vm.parseJson(json, key), (int256));
     }
 
@@ -44,10 +34,7 @@ library stdJson {
         return abi.decode(vm.parseJson(json, key), (int256[]));
     }
 
-    function readBytes32(string memory json, string memory key)
-        internal
-        returns (bytes32)
-    {
+    function readBytes32(string memory json, string memory key) internal returns (bytes32) {
         return abi.decode(vm.parseJson(json, key), (bytes32));
     }
 
@@ -58,10 +45,7 @@ library stdJson {
         return abi.decode(vm.parseJson(json, key), (bytes32[]));
     }
 
-    function readString(string memory json, string memory key)
-        internal
-        returns (string memory)
-    {
+    function readString(string memory json, string memory key) internal returns (string memory) {
         return abi.decode(vm.parseJson(json, key), (string));
     }
 
@@ -72,10 +56,7 @@ library stdJson {
         return abi.decode(vm.parseJson(json, key), (string[]));
     }
 
-    function readAddress(string memory json, string memory key)
-        internal
-        returns (address)
-    {
+    function readAddress(string memory json, string memory key) internal returns (address) {
         return abi.decode(vm.parseJson(json, key), (address));
     }
 
@@ -86,10 +67,7 @@ library stdJson {
         return abi.decode(vm.parseJson(json, key), (address[]));
     }
 
-    function readBool(string memory json, string memory key)
-        internal
-        returns (bool)
-    {
+    function readBool(string memory json, string memory key) internal returns (bool) {
         return abi.decode(vm.parseJson(json, key), (bool));
     }
 
@@ -100,10 +78,7 @@ library stdJson {
         return abi.decode(vm.parseJson(json, key), (bool[]));
     }
 
-    function readBytes(string memory json, string memory key)
-        internal
-        returns (bytes memory)
-    {
+    function readBytes(string memory json, string memory key) internal returns (bytes memory) {
         return abi.decode(vm.parseJson(json, key), (bytes));
     }
 
@@ -113,6 +88,4 @@ library stdJson {
     {
         return abi.decode(vm.parseJson(json, key), (bytes[]));
     }
-
-
 }
