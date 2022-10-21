@@ -134,10 +134,11 @@ contract P2P is ReentrancyGuard {
         uint256 amount = (_amount * 9998) / 10000; // fee
         uint256 amount2 = (listing.price * _amount * 9998) / 10000; // fee
 
+        updateListing(_seller, _fromToken, _toToken, listing.price, (listing.amount - _amount), listing.limit);
+
         TransferHelpers.safeTranfer(_toToken, msg.sender, amount);
         TransferHelpers.safeTranfer(_fromToken, _seller, amount2);
 
-        updateListing(_seller, _fromToken, _toToken, listing.price, _amount, listing.limit);
         emit BuyToken(msg.sender, _fromToken, _seller, _toToken, _amount, amount2);
     }
 
