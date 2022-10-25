@@ -18,7 +18,10 @@ library TransferHelpers {
         (bool success, bytes memory data) = token.call(
             abi.encodeWithSelector(T_SELECTOR, to, amount)
         );
-        require(success && (data.length == 0 || abi.decode(data, (bool))), "TransferHelpers: Transfer Failed!");
+        require(
+            success && (data.length == 0 || abi.decode(data, (bool))),
+            "TransferHelpers: Transfer Failed!"
+        );
     }
 
     function safeTranferFrom(
@@ -30,6 +33,9 @@ library TransferHelpers {
         (bool success, bytes memory data) = token.call(
             abi.encodeWithSelector(TF_SELECTOR, from, to, amount)
         );
-        require(success && (data.length == 0 || abi.decode(data, (bool))), "TransferHelpers: Transfer Failed!");
+        require(
+            success && (data.length == 0 || abi.decode(data, (bool))),
+            "TransferHelpers: Transfer Failed!"
+        );
     }
 }

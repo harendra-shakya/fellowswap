@@ -14,7 +14,7 @@ contract P2P is ReentrancyGuard {
         address seller;
     }
 
-    event ListToken (
+    event ListToken(
         address indexed seller,
         address indexed fromToken,
         address indexed toToken,
@@ -134,7 +134,14 @@ contract P2P is ReentrancyGuard {
         uint256 amount = (_amount * 9998) / 10000; // fee
         uint256 amount2 = (listing.price * _amount * 9998) / 10000; // fee
 
-        updateListing(_seller, _fromToken, _toToken, listing.price, (listing.amount - _amount), listing.limit);
+        updateListing(
+            _seller,
+            _fromToken,
+            _toToken,
+            listing.price,
+            (listing.amount - _amount),
+            listing.limit
+        );
 
         TransferHelpers.safeTranfer(_toToken, msg.sender, amount);
         TransferHelpers.safeTranfer(_fromToken, _seller, amount2);
@@ -154,7 +161,7 @@ contract P2P is ReentrancyGuard {
         address _seller,
         address _fromToken,
         address _toToken
-    ) external view returns (Listing memory) {
-        return listings[_seller][_fromToken][_toToken];
+    ) external view returns (Listing memory listing) {
+        listing = listings[_seller][_fromToken][_toToken];
     }
 }

@@ -16,6 +16,9 @@ contract ListTokenTest is Test {
     uint256 public constant PRICE = 1200 ether;
     uint256 public constant AMOUNT = 10 ether;
     uint256 public constant LIMIT = 3 ether;
+    address public constant user = 0xb4c79daB8f259C7Aee6E5b2Aa729821864227e84;
+    address public constant user2 = 0xC3A3362DC30588a027767063459dC533Dc4A421a;
+
 
     function setUp() public {
         p2p = new P2P();
@@ -54,17 +57,15 @@ contract ListTokenTest is Test {
         p2p.listToken(address(weth), address(dai), PRICE, AMOUNT, 11 ether);
     }
 
-    // function testStoresData() public {
-    //     this.setUp();
-    //     vm.prank(msg.sender);
-    //     p2p.listToken(address(weth), address(dai), PRICE, AMOUNT, LIMIT);
+    function testStoresData() public {
+        vm.prank(user);
+        this.setUp();
+        p2p.listToken(address(weth), address(dai), PRICE, AMOUNT, LIMIT);
+        vm.prank(user2);
+        P2P.Listing memory listing = p2p.getListing(user, address(weth), address(dai));
 
-    //     P2P.Listing memory listing = p2p.getListing(msg.sender, address(weth), address(dai));
-    //     console.log("price", listing.price);
-    //     assertEq(listing.price, PRICE);
-    
-    //     // assertEq(listing.amount, AMOUNT);
-    //     // assertEq(listing.limit, LIMIT);
-    // }
-
+        assertEq(listing.price, PRICE);
+        assertEq(listing.amount, AMOUNT);
+        assertEq(listing.limit, LIMIT);
+    }
 }
