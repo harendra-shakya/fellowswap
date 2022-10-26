@@ -1,11 +1,19 @@
+## To test with foundry
+
 First, run the following command:
 
 ```
 curl -L https://foundry.paradigm.xyz | bash
 ```
 
-Then run this command to install Foundry (in new terminal):
+Then in new terminal run this command to install Foundry:
 
 ```
 foundryup
+```
+
+Then you can test with:
+
+```
+forge test
 ```
