@@ -54,11 +54,7 @@ contract P2P is ReentrancyGuard {
         _;
     }
 
-    modifier onlyOwner(address _fromToken, address _toToken) {
-        Listing memory listing = listings[msg.sender][_fromToken][_toToken];
-        require(msg.sender == listing.seller || msg.sender == address(this), "P2P: Not owner");
-        _;
-    }
+    
 
     modifier isEnoughToken(
         uint256 _price,
@@ -83,13 +79,16 @@ contract P2P is ReentrancyGuard {
         uint256 _price,
         uint256 _amount,
         uint256 _limit
-    ) public isListed(_fromToken, _toToken, _seller) onlyOwner(_fromToken, _toToken) {
+    ) private isListed(_fromToken, _toToken, _seller) {
         require(_price > 0, "P2P: Invalid Price");
 
         if (_amount > IERC20(_fromToken).balanceOf(_seller) || _amount == 0) {
             delete listings[_seller][_fromToken][_toToken];
         } else {
-            listings[_seller][_fromToken][_toToken] = Listing(_price, _amount, _limit, _seller);
+            // stack too deep error
+            {
+                listings[_seller][_fromToken][_toToken] = Listing(_price, _amount, _limit, _seller);
+            }
         }
         emit ListToken(_seller, _fromToken, _toToken, _price, _amount, _limit);
     }
@@ -118,7 +117,7 @@ contract P2P is ReentrancyGuard {
         address _toToken,
         address _seller,
         uint256 _amount
-    ) external isListed(_fromToken, _toToken, _seller) nonReentrant {
+    ) external isListed(_toToken, _fromToken, _seller) nonReentrant {
         Listing memory listing = listings[_seller][_toToken][_fromToken];
         require(_amount >= listing.limit && _amount <= listing.amount, "P2P: Out of limit");
 
@@ -127,27 +126,37 @@ contract P2P is ReentrancyGuard {
             _fromToken,
             msg.sender,
             address(this),
-            listing.price * _amount
+            (listing.price * _amount) / 1 ether
         ); // buyer -> contract
         TransferHelpers.safeTranferFrom(_toToken, _seller, address(this), _amount); // seller -> contract
 
         uint256 amount = (_amount * 9998) / 10000; // fee
-        uint256 amount2 = (listing.price * _amount * 9998) / 10000; // fee
-
+        uint256 amount2 = ((listing.price * _amount * 9998) / 1 ether) / 10000; // fee 
+        // TODO: Remove this 1 ether
         updateListing(
             _seller,
+             _toToken,
             _fromToken,
-            _toToken,
             listing.price,
             (listing.amount - _amount),
             listing.limit
         );
+
+        emit buy2(_fromToken, _toToken, _seller, amount, amount2);
 
         TransferHelpers.safeTranfer(_toToken, msg.sender, amount);
         TransferHelpers.safeTranfer(_fromToken, _seller, amount2);
 
         emit BuyToken(msg.sender, _fromToken, _seller, _toToken, _amount, amount2);
     }
+
+    event buy2(
+        address indexed fromToken,
+        address indexed toTokem,
+        address indexed seller,
+        uint256 amount,
+        uint256 amount2
+    );
 
     function cancelListing(address _fromToken, address _toToken)
         external
