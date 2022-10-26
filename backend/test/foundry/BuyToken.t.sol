@@ -59,9 +59,16 @@ contract BuyTokenTest is BaseSetup {
         weth.approve(address(p2p), 21000000 ether);
         vm.stopPrank();
         vm.startPrank(user2);
+        uint256 userBeforeBalace = weth.balanceOf(user);
+        uint256 user2BeforeBalace = dai.balanceOf(user2);
         dai.approve(address(p2p), 21000000 ether);
         console.log("but token");
         p2p.buyToken(address(dai), address(weth), user, amount);
+
+        assertEq(userBeforeBalace - weth.balanceOf(user), amount);
+        assertEq(user2BeforeBalace - dai.balanceOf(user2), 1200 ether * _amount);
+        assertEq(dai.balanceOf(user), (1200 ether * _amount * 9998) / 10000);
+        assertEq(weth.balanceOf(user2), (amount * 9998) / 10000);
         vm.stopPrank();
     }
 }

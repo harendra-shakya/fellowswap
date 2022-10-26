@@ -142,21 +142,11 @@ contract P2P is ReentrancyGuard {
             listing.limit
         );
 
-        emit buy2(_fromToken, _toToken, _seller, amount, amount2);
-
         TransferHelpers.safeTranfer(_toToken, msg.sender, amount);
         TransferHelpers.safeTranfer(_fromToken, _seller, amount2);
 
         emit BuyToken(msg.sender, _fromToken, _seller, _toToken, _amount, amount2);
     }
-
-    event buy2(
-        address indexed fromToken,
-        address indexed toTokem,
-        address indexed seller,
-        uint256 amount,
-        uint256 amount2
-    );
 
     function cancelListing(address _fromToken, address _toToken)
         external
