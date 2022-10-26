@@ -3,7 +3,6 @@
 pragma solidity ^0.8.7;
 
 import "forge-std/Test.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "../../contracts/P2P.sol";
 import "../../contracts/test-token/GenericERC20.sol";
 import "forge-std/console.sol";

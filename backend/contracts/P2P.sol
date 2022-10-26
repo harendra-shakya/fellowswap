@@ -2,9 +2,9 @@
 
 pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./libraries/TransferHelpers.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
 contract P2P is ReentrancyGuard {
     struct Listing {
@@ -64,7 +64,7 @@ contract P2P is ReentrancyGuard {
         require(_price > 0, "P2P: Invalid Price");
         require(_amount > 0, "P2P: Invalid Amount");
         require(
-            IERC20(_fromToken).balanceOf(msg.sender) >= _amount,
+            IERC20Metadata(_fromToken).balanceOf(msg.sender) >= _amount,
             "P2P: Not have enough tokens"
         );
         _;
@@ -82,7 +82,7 @@ contract P2P is ReentrancyGuard {
     ) private isListed(_fromToken, _toToken, _seller) {
         require(_price > 0, "P2P: Invalid Price");
 
-        if (_amount > IERC20(_fromToken).balanceOf(_seller) || _amount == 0) {
+        if (_amount > IERC20Metadata(_fromToken).balanceOf(_seller) || _amount == 0) {
             delete listings[_seller][_fromToken][_toToken];
         } else {
             // stack too deep error
@@ -126,12 +126,12 @@ contract P2P is ReentrancyGuard {
             _fromToken,
             msg.sender,
             address(this),
-            (listing.price * _amount) / 1 ether
+            (listing.price * _amount) / 10 ** IERC20Metadata(_fromToken).decimals()
         ); // buyer -> contract
         TransferHelpers.safeTranferFrom(_toToken, _seller, address(this), _amount); // seller -> contract
 
         uint256 amount = (_amount * 9998) / 10000; // fee
-        uint256 amount2 = ((listing.price * _amount * 9998) / 1 ether) / 10000; // fee 
+        uint256 amount2 = ((listing.price * _amount * 9998) / 10 ** IERC20Metadata(_fromToken).decimals()) / 10000; // fee 
         // TODO: Remove this 1 ether
         updateListing(
             _seller,
