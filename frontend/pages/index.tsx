@@ -1,5 +1,5 @@
 import { useMoralis } from "react-moralis";
-import Main from "../components/Main";
+import Buy from "../components/Buy";
 
 export default function Home(): JSX.Element {
     const { isWeb3Enabled, chainId, account } = useMoralis();
@@ -10,7 +10,7 @@ export default function Home(): JSX.Element {
                 <div>
                     {parseInt(chainId!) === 80001 ? (
                         <div>
-                            <Main />
+                            <Buy />
                         </div>
                     ) : (
                         <div>Plz Connect to Mumbai testnet</div>

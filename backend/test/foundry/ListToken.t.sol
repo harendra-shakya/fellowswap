@@ -10,7 +10,6 @@ import {BaseSetup} from "./BaseSetup.t.sol";
 import {Utils} from "./utils/Utils.sol";
 
 contract ListTokenTest is BaseSetup {
-
     function setUp() public virtual override {
         BaseSetup.setUp();
     }

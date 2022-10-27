@@ -54,8 +54,6 @@ contract P2P is ReentrancyGuard {
         _;
     }
 
-    
-
     modifier isEnoughToken(
         uint256 _price,
         uint256 _amount,
@@ -87,7 +85,12 @@ contract P2P is ReentrancyGuard {
         } else {
             // stack too deep error
             {
-                listings[_seller][_fromToken][_toToken] = Listing(_price, _amount, _limit, _seller);
+                listings[_seller][_fromToken][_toToken] = Listing(
+                    _price,
+                    _amount,
+                    _limit,
+                    _seller
+                );
             }
         }
         emit ListToken(_seller, _fromToken, _toToken, _price, _amount, _limit);
@@ -126,16 +129,17 @@ contract P2P is ReentrancyGuard {
             _fromToken,
             msg.sender,
             address(this),
-            (listing.price * _amount) / 10 ** IERC20Metadata(_fromToken).decimals()
+            (listing.price * _amount) / 10**IERC20Metadata(_fromToken).decimals()
         ); // buyer -> contract
         TransferHelpers.safeTranferFrom(_toToken, _seller, address(this), _amount); // seller -> contract
 
         uint256 amount = (_amount * 9998) / 10000; // fee
-        uint256 amount2 = ((listing.price * _amount * 9998) / 10 ** IERC20Metadata(_fromToken).decimals()) / 10000; // fee 
+        uint256 amount2 = ((listing.price * _amount * 9998) /
+            10**IERC20Metadata(_fromToken).decimals()) / 10000; // fee
         // TODO: Remove this 1 ether
         updateListing(
             _seller,
-             _toToken,
+            _toToken,
             _fromToken,
             listing.price,
             (listing.amount - _amount),

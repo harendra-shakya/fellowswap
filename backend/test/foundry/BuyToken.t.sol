@@ -10,7 +10,6 @@ import {Utils} from "./utils/Utils.sol";
 import {BaseSetup} from "./BaseSetup.t.sol";
 
 contract BuyTokenTest is BaseSetup {
-
     function setUp() public virtual override {
         BaseSetup.setUp();
         p2p.listToken(address(weth), address(dai), PRICE, AMOUNT, LIMIT);
@@ -21,7 +20,7 @@ contract BuyTokenTest is BaseSetup {
         this.setUp();
         vm.prank(user2);
         vm.expectRevert(abi.encodePacked("P2P: Out of limit"));
-        p2p.buyToken(address(dai), address(weth),  user, 2 ether);
+        p2p.buyToken(address(dai), address(weth), user, 2 ether);
     }
 
     function testRevertIfNotListed() public {
@@ -29,7 +28,7 @@ contract BuyTokenTest is BaseSetup {
         this.setUp();
         vm.prank(user2);
         vm.expectRevert(abi.encodePacked("P2P: Not listed"));
-        p2p.buyToken(address(dai), address(usdc),  user, 3 ether);
+        p2p.buyToken(address(dai), address(usdc), user, 3 ether);
     }
 
     function testBuyToken() public {
@@ -53,7 +52,7 @@ contract BuyTokenTest is BaseSetup {
 
     function testFuzzingBuyToken(uint256 _amount) public {
         vm.assume(_amount >= 3 && _amount <= 10);
-        uint256 amount = _amount * 10 **18;
+        uint256 amount = _amount * 10**18;
         vm.startPrank(user);
         this.setUp();
         weth.approve(address(p2p), 21000000 ether);
