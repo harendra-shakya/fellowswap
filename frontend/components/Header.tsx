@@ -9,7 +9,10 @@ export default function Header(): JSX.Element {
             </h1>
             <div className="flex flex-row justify-between absolute top-0 right-10 items-center">
                 <Link href="/">
-                    <a className="mr-3 p-6">Home</a>
+                    <a className="mr-3 p-6">Buy</a>
+                </Link>
+                <Link href="/sell">
+                    <a className="mr-3 p-6">Sell</a>
                 </Link>
                 <ConnectButton moralisAuth={false} />
             </div>
