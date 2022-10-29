@@ -52,7 +52,6 @@ contract BuyTokenTest is BaseSetup {
 
     function testFuzzingBuyToken(uint256 _amount) public {
         vm.assume(_amount >= 3 && _amount <= 10);
-        uint256 amount = _amount * 10**18;
         vm.startPrank(user);
         this.setUp();
         weth.approve(address(p2p), 21000000 ether);
@@ -61,7 +60,8 @@ contract BuyTokenTest is BaseSetup {
         uint256 userBeforeBalace = weth.balanceOf(user);
         uint256 user2BeforeBalace = dai.balanceOf(user2);
         dai.approve(address(p2p), 21000000 ether);
-        console.log("but token");
+        
+        uint256 amount = _amount * 10**18;
         p2p.buyToken(address(dai), address(weth), user, amount);
 
         assertEq(userBeforeBalace - weth.balanceOf(user), amount);

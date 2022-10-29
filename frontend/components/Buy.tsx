@@ -29,7 +29,7 @@ export default function Pool(): JSX.Element {
 
     return (
         <div className="p-6">
-            <div className="p-8 pt-6 font-semibold text-3xl text-gray-500">Buy</div>
+            <div className="p-8 pt-6 font-semibold text-3xl text-gray-500">Buy Token</div>
             <Table
                 columnsConfig="60px 35px 1fr 1fr 1fr 1fr 1fr 200px"
                 data={[
@@ -58,7 +58,7 @@ export default function Pool(): JSX.Element {
                 pageSize={8}
                 isLoading={isLoading}
             />
-            <BuyModal isVisible={showBuyModal} onClose={() => setShowBuyModal(false)} />
+            {/* <BuyModal isVisible={showBuyModal} onClose={() => setShowBuyModal(false)} /> */}
         </div>
     );
 }
