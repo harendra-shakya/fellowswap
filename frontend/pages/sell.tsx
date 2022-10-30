@@ -4,6 +4,8 @@ import { Table, Button } from "@web3uikit/core";
 import Image from "next/image";
 import { ethers, Contract, ContractInterface } from "ethers";
 import contractAddresses from "../constants/networkMapping.json";
+import ListModal from "../components/ListModal";
+
 declare var window: any;
 
 export default function Sell(): JSX.Element {
@@ -31,7 +33,9 @@ export default function Sell(): JSX.Element {
                                         "10000",
                                         "$1200",
                                         <Button
-                                            onClick={() => {}}
+                                            onClick={() => {
+                                                setShowSellModal(true);
+                                            }}
                                             text="List"
                                             theme="primary"
                                             size="large"
@@ -50,7 +54,10 @@ export default function Sell(): JSX.Element {
                                 pageSize={8}
                                 isLoading={isLoading}
                             />
-                            {/* <SellModal isVisible={showSellModal} onClose={() => setShowSellModal(false)} /> */}
+                            <ListModal
+                                isVisible={showSellModal}
+                                onClose={() => setShowSellModal(false)}
+                            />
                         </div>
                     ) : (
                         <div>Plz Connect to Mumbai testnet</div>
