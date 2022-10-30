@@ -41,7 +41,14 @@ export default function Pool(): JSX.Element {
                         "10",
                         "3",
                         "0xC3A3.....Dc421a",
-                        <Button onClick={() => {}} text="Buy" theme="primary" size="large" />,
+                        <Button
+                            onClick={() => {
+                                setShowBuyModal(true);
+                            }}
+                            text="Buy"
+                            theme="primary"
+                            size="large"
+                        />,
                     ],
                 ]}
                 header={[
@@ -58,7 +65,7 @@ export default function Pool(): JSX.Element {
                 pageSize={8}
                 isLoading={isLoading}
             />
-            {/* <BuyModal isVisible={showBuyModal} onClose={() => setShowBuyModal(false)} /> */}
+            <BuyModal isVisible={showBuyModal} onClose={() => setShowBuyModal(false)} />
         </div>
     );
 }
