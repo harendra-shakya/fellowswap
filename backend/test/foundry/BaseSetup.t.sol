@@ -20,8 +20,12 @@ contract BaseSetup is Test {
 
     function setUp() public virtual {
         p2p = new P2P();
-        dai = new GenericERC20("DAI", "DAI", 18, user2);
-        usdc = new GenericERC20("USDC", "USDC", 6, user);
-        weth = new GenericERC20("WETH", "WETH", 18, user);
+        vm.startPrank(user2);
+        dai = new GenericERC20("DAI", "DAI", 18);
+        vm.stopPrank();
+        vm.startPrank(user);
+        usdc = new GenericERC20("USDC", "USDC", 6);
+        weth = new GenericERC20("WETH", "WETH", 18);
+        vm.stopPrank();
     }
 }

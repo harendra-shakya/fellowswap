@@ -16,7 +16,6 @@ contract BuyTokenTest is BaseSetup {
     }
 
     function testRevertIfAmountIsLessThanLimit() public {
-        vm.prank(user);
         this.setUp();
         vm.prank(user2);
         vm.expectRevert(abi.encodePacked("P2P: Out of limit"));
@@ -24,7 +23,6 @@ contract BuyTokenTest is BaseSetup {
     }
 
     function testRevertIfNotListed() public {
-        vm.prank(user);
         this.setUp();
         vm.prank(user2);
         vm.expectRevert(abi.encodePacked("P2P: Not listed"));
@@ -32,8 +30,8 @@ contract BuyTokenTest is BaseSetup {
     }
 
     function testBuyToken() public {
-        vm.startPrank(user);
         this.setUp();
+        vm.startPrank(user);
         weth.approve(address(p2p), 21000000 ether);
         vm.stopPrank();
         vm.startPrank(user2);
@@ -52,15 +50,15 @@ contract BuyTokenTest is BaseSetup {
 
     function testFuzzingBuyToken(uint256 _amount) public {
         vm.assume(_amount >= 3 && _amount <= 10);
-        vm.startPrank(user);
         this.setUp();
+        vm.startPrank(user);
         weth.approve(address(p2p), 21000000 ether);
         vm.stopPrank();
         vm.startPrank(user2);
         uint256 userBeforeBalace = weth.balanceOf(user);
         uint256 user2BeforeBalace = dai.balanceOf(user2);
         dai.approve(address(p2p), 21000000 ether);
-        
+
         uint256 amount = _amount * 10**18;
         p2p.buyToken(address(dai), address(weth), user, amount);
 

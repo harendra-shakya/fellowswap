@@ -28,7 +28,7 @@ describe("contract tests", function () {
 
         daiToken = await erc20Factory.deploy("DAI", "DAI", "18");
         usdcToken = await erc20Factory.deploy("USDC", "USDC", "6");
-        wbtcToken = await erc20Factory.deploy("USDT", "USDT", "8");
+        wbtcToken = await erc20Factory.deploy("WBTC", "WBTC", "8");
         wethToken = await erc20Factory.deploy("WETH", "WETH", "18");
     });
 

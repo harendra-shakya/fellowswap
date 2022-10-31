@@ -16,7 +16,6 @@ contract BuyTokenTest is BaseSetup {
     }
 
     function testRevertIfNotListed() public {
-        vm.prank(user);
         this.setUp();
         vm.prank(user2);
         vm.expectRevert(abi.encodePacked("P2P: Not listed"));
@@ -24,9 +23,8 @@ contract BuyTokenTest is BaseSetup {
     }
 
     function testCancelListing() public {
-        vm.prank(user);
         this.setUp();
-
+        vm.prank(user);
         P2P.Listing memory listing = p2p.getListing(user, address(weth), address(dai));
         assertEq(listing.seller, user);
 
