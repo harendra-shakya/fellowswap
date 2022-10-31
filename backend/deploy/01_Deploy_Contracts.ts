@@ -24,8 +24,16 @@ const deployFunction: DeployFunction = async ({ getNamedAccounts, deployments })
         waitConfirmations: waitConfirmations,
     });
 
-    if (!developmentChains.includes(network.name)) {
+    log("deployed!");
+
+    if (
+        !developmentChains.includes(network.name) &&
+        process.env.ETHERSCAN_API_KEY &&
+        process.env.POLYGONSCAN_API_KEY
+    ) {
+        log("veryfying.....");
         await verify(p2p.address, []);
+        log("veryfied!");
     }
 };
 
