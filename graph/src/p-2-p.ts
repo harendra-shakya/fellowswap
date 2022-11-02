@@ -1,49 +1,95 @@
-import { BigInt } from "@graphprotocol/graph-ts"
-import { P2P, BuyToken, CancelListing, ListToken } from "../generated/P2P/P2P"
-import { ExampleEntity } from "../generated/schema"
+import { P2P, BuyToken, CancelListing, ListToken } from '../generated/P2P/P2P'
+import { BigInt, Address } from '@graphprotocol/graph-ts'
+import {
+  BuyToken as BuyTokenEvent,
+  CancelListing as CancelListingEvent,
+  ListToken as ListTokenEvent,
+} from '../generated/P2P/P2P'
+import {
+  TokenListed,
+  ActiveToken,
+  TokenBought,
+  TokenCanceled,
+} from '../generated/schema'
 
-export function handleBuyToken(event: BuyToken): void {
-  // Entities can be loaded from the store using a string ID; this ID
-  // needs to be unique across all entities of the same type
-  let entity = ExampleEntity.load(event.transaction.from.toHex())
-
-  // Entities only exist after they have been saved to the store;
-  // `null` checks allow to create entities on demand
-  if (!entity) {
-    entity = new ExampleEntity(event.transaction.from.toHex())
-
-    // Entity fields can be set using simple assignments
-    entity.count = BigInt.fromI32(0)
+export function handleListToken(event: ListTokenEvent): void {
+  let tokenListed = TokenListed.load(getIdFromEventParams(event.params.seller))
+  let activeItem = ActiveToken.load(getIdFromEventParams(event.params.seller))
+  if (!tokenListed) {
+    tokenListed = new TokenListed(getIdFromEventParams(event.params.seller))
   }
+  if (!activeItem) {
+    activeItem = new ActiveToken(getIdFromEventParams(event.params.seller))
+  }
+  tokenListed.seller = event.params.seller
+  activeItem.seller = event.params.seller
 
-  // BigInt and BigDecimal math are supported
-  entity.count = entity.count + BigInt.fromI32(1)
+  tokenListed.fromToken = event.params.fromToken
+  activeItem.fromToken = event.params.fromToken
 
-  // Entity fields can be set based on event parameters
-  entity.buyer = event.params.buyer
-  entity.fromToken = event.params.fromToken
+  tokenListed.toToken = event.params.toToken
+  activeItem.toToken = event.params.toToken
 
-  // Entities can be written to the store with `.save()`
-  entity.save()
+  tokenListed.amount = event.params.amount
+  activeItem.amount = event.params.amount
 
-  // Note: If a handler doesn't require existing field values, it is faster
-  // _not_ to load the entity from the store. Instead, create it fresh with
-  // `new Entity(...)`, set the fields that should be updated and save the
-  // entity back to the store. Fields that were not set or unset remain
-  // unchanged, allowing for partial updates to be applied.
+  tokenListed.price = event.params.price
+  activeItem.price = event.params.price
 
-  // It is also possible to access smart contracts from mappings. For
-  // example, the contract that has emitted the event can be connected to
-  // with:
-  //
-  // let contract = Contract.bind(event.address)
-  //
-  // The following functions can then be called on this contract to access
-  // state variables and other data:
-  //
-  // - contract.getListing(...)
+  tokenListed.limit = event.params.limit
+  activeItem.limit = event.params.limit
+
+  activeItem.buyer = Address.fromString(
+    '0x0000000000000000000000000000000000000000',
+  )
+
+  tokenListed.save()
+  activeItem.save()
 }
 
-export function handleCancelListing(event: CancelListing): void {}
+export function handleCancelListing(event: CancelListingEvent): void {
+  let itemCanceled = TokenCanceled.load(
+    getIdFromEventParams(event.params.seller),
+  )
+  let activeItem = ActiveToken.load(getIdFromEventParams(event.params.seller))
+  if (!itemCanceled) {
+    itemCanceled = new TokenCanceled(getIdFromEventParams(event.params.seller))
+  }
 
-export function handleListToken(event: ListToken): void {}
+  itemCanceled.seller = event.params.seller
+  itemCanceled.fromToken = event.params.fromToken
+  itemCanceled.toToken = event.params.toToken
+  activeItem!.buyer = Address.fromString(
+    '0x000000000000000000000000000000000000dEaD',
+  )
+
+  itemCanceled.save()
+  activeItem!.save()
+}
+
+export function handleBuyToken(event: BuyTokenEvent): void {
+  let itemBought = TokenBought.load(getIdFromEventParams(event.params.seller))
+  let activeItem = ActiveToken.load(getIdFromEventParams(event.params.seller))
+  if (!itemBought) {
+    itemBought = new TokenBought(getIdFromEventParams(event.params.seller))
+  }
+
+  itemBought.buyer = event.params.buyer
+  itemBought.seller = event.params.seller
+  itemBought.toToken = event.params.toToken
+  itemBought.fromToken = event.params.fromToken
+  itemBought.boughtTokens = event.params.boughtTokens
+  itemBought.soldToken = event.params.soldToken
+
+  activeItem!.buyer = event.params.buyer
+
+  itemBought.save()
+  activeItem!.save()
+}
+
+let counter = 0
+
+function getIdFromEventParams(seller: Address): string {
+  counter++
+  return seller.toHexString() + counter.toString()
+}

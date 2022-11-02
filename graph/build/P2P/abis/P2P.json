@@ -1,0 +1,218 @@
+[
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "BuyToken",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "buyer",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "fromToken",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "seller",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "toToken",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "boughtTokens",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "soldToken",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "CancelListing",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "seller",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "fromToken",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "toToken",
+        "indexed": true
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ListToken",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "seller",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "fromToken",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "toToken",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "price",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "limit",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "buyToken",
+    "constant": false,
+    "payable": false,
+    "gas": 29000000,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "_fromToken"
+      },
+      {
+        "type": "address",
+        "name": "_toToken"
+      },
+      {
+        "type": "address",
+        "name": "_seller"
+      },
+      {
+        "type": "uint256",
+        "name": "_amount"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "cancelListing",
+    "constant": false,
+    "payable": false,
+    "gas": 29000000,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "_fromToken"
+      },
+      {
+        "type": "address",
+        "name": "_toToken"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "getListing",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "gas": 29000000,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "_seller"
+      },
+      {
+        "type": "address",
+        "name": "_fromToken"
+      },
+      {
+        "type": "address",
+        "name": "_toToken"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "tuple",
+        "name": "listing",
+        "components": [
+          {
+            "type": "uint256",
+            "name": "price"
+          },
+          {
+            "type": "uint256",
+            "name": "amount"
+          },
+          {
+            "type": "uint256",
+            "name": "limit"
+          },
+          {
+            "type": "address",
+            "name": "seller"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "listToken",
+    "constant": false,
+    "payable": false,
+    "gas": 29000000,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "_fromToken"
+      },
+      {
+        "type": "address",
+        "name": "_toToken"
+      },
+      {
+        "type": "uint256",
+        "name": "_price"
+      },
+      {
+        "type": "uint256",
+        "name": "_amount"
+      },
+      {
+        "type": "uint256",
+        "name": "_limit"
+      }
+    ],
+    "outputs": []
+  }
+]
