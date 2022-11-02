@@ -30,16 +30,16 @@ const updateAddresses = async () => {
     const contractAddresses = await JSON.parse(fs.readFileSync(mappingPath, "utf8"));
     const chainId = await network.config.chainId?.toString();
 
-        if (chainId! in contractAddresses) {
-            if (!contractAddresses[chainId!]["P2P"]) {
-                contractAddresses[chainId!]["P2P"] = [p2p.address];
-            } else {
-                contractAddresses[chainId!]["P2P"].pop();
-                contractAddresses[chainId!]["P2P"].push(p2p.address);
-            }
+    if (chainId! in contractAddresses) {
+        if (!contractAddresses[chainId!]["P2P"]) {
+            contractAddresses[chainId!]["P2P"] = [p2p.address];
         } else {
-            contractAddresses[chainId!] = { ["P2P"]: [p2p.address] };
+            contractAddresses[chainId!]["P2P"].pop();
+            contractAddresses[chainId!]["P2P"].push(p2p.address);
         }
+    } else {
+        contractAddresses[chainId!] = { ["P2P"]: [p2p.address] };
+    }
 
     fs.writeFileSync(mappingPath, JSON.stringify(contractAddresses));
 };

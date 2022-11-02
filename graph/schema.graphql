@@ -1,0 +1,39 @@
+type ActiveToken @entity {
+  id: ID!
+  seller: Bytes!
+  fromToken: Bytes!
+  toTokem: Bytes!
+  amount: BigInt!
+  price: BigInt!
+  limit: BigInt!
+}
+
+type TokenListed @entity {
+  id: ID!
+  seller: Bytes!
+  fromToken: Bytes!
+  toTokem: Bytes!
+  amount: BigInt!
+  price: BigInt!
+  limit: BigInt!
+}
+
+type TokenCanceled  @entity {
+  id: ID!
+  seller: Bytes!
+  fromToken: Bytes!
+  toTokem: Bytes!
+  amount: BigInt!
+  price: BigInt!
+  limit: BigInt!
+}
+
+type TokenBought  @entity {
+  id: ID!
+  seller: Bytes!
+  buyer: Bytes!
+  fromToken: Bytes!
+  toTokem: Bytes!
+  boughtTokens: BigInt!
+  soldToken: BigInt!
+}

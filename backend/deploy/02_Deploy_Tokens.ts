@@ -56,7 +56,6 @@ const deployFunction: DeployFunction = async ({ getNamedAccounts, deployments })
 
     fs.writeFileSync(mappingPath, JSON.stringify(contractAddresses));
     fs.writeFileSync(helperPath, JSON.stringify(helperFile));
-
 };
 
 export default deployFunction;
