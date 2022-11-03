@@ -57,9 +57,10 @@ export default function Sell(): JSX.Element {
             const provider = await new ethers.providers.Web3Provider(ethereum);
             const signer = await provider.getSigner();
             for (let tokenAddress of tokenAddresses) {
-                const contract = await new ethers.Contract(tokenAddress, erc20Abi, signer);
-                const tokenBalance = await contract.balanceOf(account);
-                balances.push(tokenBalance);
+                const token = await new ethers.Contract(tokenAddress, erc20Abi, signer);
+                const tokenBalance = await token.balanceOf(account);
+                let decimal = await token.decimals();
+                balances.push(ethers.utils.formatUnits(tokenBalance, decimal));
             }
 
             setTokenBalances(balances);
