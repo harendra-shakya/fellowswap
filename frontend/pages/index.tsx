@@ -4,16 +4,18 @@ import Buy from "../components/Buy";
 export default function Home(): JSX.Element {
     const { isWeb3Enabled, chainId, account } = useMoralis();
 
+    const supportedNetworks = [80001, 5];
+
     return (
         <div>
             {isWeb3Enabled ? (
                 <div>
-                    {parseInt(chainId!) === 80001 ? (
+                    {supportedNetworks.includes(parseInt(chainId!)) ? (
                         <div>
                             <Buy />
                         </div>
                     ) : (
-                        <div>Plz Connect to Mumbai testnet</div>
+                        <div>Plz Connect to a Supported network {supportedNetworks}</div>
                     )}
                 </div>
             ) : (
