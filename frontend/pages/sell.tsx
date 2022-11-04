@@ -11,17 +11,15 @@ declare var window: any;
 
 export default function Sell(): JSX.Element {
     const { isWeb3Enabled, chainId, account } = useMoralis();
-    const [isDisabled, setIsDisabled] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [showSellModal, setShowSellModal] = useState<boolean>(false);
     const [tokenBalances, setTokenBalances] = useState<string[]>([]);
     const [tokenAddresses, setTokenAddresses] = useState<string[]>([]);
     const [data, setData] = useState<(string | JSX.Element)[][]>([]);
+    const [index, setIndex] = useState<number>(0);
 
     const tokenNames = ["WBTC", "WETH", "DAI", "USDC"]; // it is just for testing
     const supportedNetworks = [80001, 5];
-
-    console.log("balances", tokenBalances);
 
     useEffect(() => {
         updateUI();
@@ -35,6 +33,7 @@ export default function Sell(): JSX.Element {
 
     async function fetchTokenAddreses() {
         try {
+            // setIsLoading(true);
             type Token = "WETH" | "DAI" | "WBTC" | "USDC";
             const addresses: string[] = [];
             const _chainId: "31337" | "5" = parseInt(chainId!).toString() as "31337" | "5";
@@ -45,6 +44,7 @@ export default function Sell(): JSX.Element {
             }
 
             setTokenAddresses(addresses);
+            setIsLoading(false);
         } catch (e) {
             console.log(e);
         }
@@ -83,6 +83,7 @@ export default function Sell(): JSX.Element {
                         "$1200",
                         <Button
                             onClick={() => {
+                                setIndex(i);
                                 setShowSellModal(true);
                             }}
                             text="List"
@@ -107,6 +108,40 @@ export default function Sell(): JSX.Element {
                     {supportedNetworks.includes(parseInt(chainId!)) ? (
                         <div className="p-6">
                             <div className="p-8 pt-6 font-semibold text-3xl text-gray-500">
+                                Your Listed Tokens
+                            </div>
+                            <Table
+                                columnsConfig="60px 35px 1fr 1fr 1fr 1fr 200px"
+                                data={[
+                                    [
+                                        "",
+                                        "",
+                                        "WETH",
+                                        "1200 DAI / WETH",
+                                        "10",
+                                        "3",
+                                        <Button
+                                            onClick={() => {}}
+                                            text="Buy"
+                                            theme="primary"
+                                            size="large"
+                                        />,
+                                    ],
+                                ]}
+                                header={[
+                                    "",
+                                    "",
+                                    <span>Token</span>,
+                                    <span>Price</span>,
+                                    <span>Amount</span>,
+                                    <span>Limit</span>,
+                                    "", //buy
+                                ]}
+                                maxPages={1}
+                                pageSize={8}
+                                isLoading={isLoading}
+                            />
+                            <div className="p-8 pt-6 font-semibold text-3xl text-gray-500">
                                 Your Wallet
                             </div>
                             <Table
@@ -126,6 +161,10 @@ export default function Sell(): JSX.Element {
                             <ListModal
                                 isVisible={showSellModal}
                                 onClose={() => setShowSellModal(false)}
+                                index={index}
+                                tokenNames={tokenNames}
+                                tokenAddresses={tokenAddresses}
+                                tokenBalances={tokenBalances}
                             />
                         </div>
                     ) : (

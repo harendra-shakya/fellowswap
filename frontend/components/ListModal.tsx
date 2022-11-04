@@ -10,9 +10,20 @@ declare var window: any;
 type ListModalProps = {
     isVisible: boolean;
     onClose: () => void;
+    index: number;
+    tokenNames: string[];
+    tokenAddresses: string[];
+    tokenBalances: string[];
 };
 
-export default function ListModal({ isVisible, onClose }: ListModalProps) {
+export default function ListModal({
+    isVisible,
+    onClose,
+    index,
+    tokenNames,
+    tokenAddresses,
+    tokenBalances,
+}: ListModalProps) {
     const { isWeb3Enabled, account, chainId } = useMoralis();
     const [isOkDisabled, setIsOkDisabled] = useState(false);
     const [amount1, setAmount1] = useState("0");
@@ -75,7 +86,7 @@ export default function ListModal({ isVisible, onClose }: ListModalProps) {
                 onCancel={onClose}
                 onCloseButtonPressed={onClose}
                 onOk={() => {}}
-                title={`List WETH`}
+                title={`List ${tokenNames[index]}`}
                 width="450px"
                 isCentered={true}
                 isOkDisabled={isOkDisabled}
