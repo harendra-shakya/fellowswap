@@ -6,11 +6,10 @@ import { ethers, Contract, ContractInterface } from "ethers";
 import contractAddresses from "../constants/networkMapping.json";
 import ListModal from "../components/ListModal";
 import erc20Abi from "../constants/Token.json";
-import List from "../components/List";
 
 declare var window: any;
 
-export default function Sell(): JSX.Element {
+export default function List(): JSX.Element {
     const { isWeb3Enabled, chainId, account } = useMoralis();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [showSellModal, setShowSellModal] = useState<boolean>(false);
@@ -24,6 +23,7 @@ export default function Sell(): JSX.Element {
 
     useEffect(() => {
         updateUI();
+        console.log("happening");
     }, [isWeb3Enabled, data]);
 
     async function updateUI() {
@@ -34,7 +34,7 @@ export default function Sell(): JSX.Element {
 
     async function fetchTokenAddreses() {
         try {
-            // setIsLoading(true);
+            setIsLoading(true);
             type Token = "WETH" | "DAI" | "WBTC" | "USDC";
             const addresses: string[] = [];
             const _chainId: "31337" | "5" = parseInt(chainId!).toString() as "31337" | "5";
@@ -109,41 +109,30 @@ export default function Sell(): JSX.Element {
                     {supportedNetworks.includes(parseInt(chainId!)) ? (
                         <div className="p-6">
                             <div className="p-8 pt-6 font-semibold text-3xl text-gray-500">
-                                Your Listed Tokens
+                                Your Wallet
                             </div>
                             <Table
-                                columnsConfig="60px 35px 1fr 1fr 1fr 1fr 200px"
-                                data={[
-                                    [
-                                        "",
-                                        "",
-                                        "WETH",
-                                        "1200 DAI / WETH",
-                                        "10",
-                                        "3",
-                                        <Button
-                                            onClick={() => {}}
-                                            text="Buy"
-                                            theme="primary"
-                                            size="large"
-                                        />,
-                                    ],
-                                ]}
+                                columnsConfig="60px 1fr 1fr 1fr 200px"
+                                data={data}
                                 header={[
                                     "",
-                                    "",
                                     <span>Token</span>,
-                                    <span>Price</span>,
-                                    <span>Amount</span>,
-                                    <span>Limit</span>,
-                                    "", //buy
+                                    <span>Your Balance</span>,
+                                    <span>Price</span>, // use chainlink to get the prices
+                                    "",
                                 ]}
                                 maxPages={1}
                                 pageSize={8}
                                 isLoading={isLoading}
                             />
-
-                            <List />
+                            <ListModal
+                                isVisible={showSellModal}
+                                onClose={() => setShowSellModal(false)}
+                                index={index}
+                                tokenNames={tokenNames}
+                                tokenAddresses={tokenAddresses}
+                                tokenBalances={tokenBalances}
+                            />
                         </div>
                     ) : (
                         <div>Plz Connect to a Supported network {supportedNetworks}</div>

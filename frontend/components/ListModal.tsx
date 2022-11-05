@@ -29,7 +29,7 @@ export default function ListModal({
     const [amount1, setAmount1] = useState("0");
     const [amount2, setAmount2] = useState("0");
     const [OptionProps, setOptionProps] = useState<OptionProps[]>();
-    const [token1, setToken1] = useState("WETH");
+    const [token1, setToken1] = useState("");
     const [token2, setToken2] = useState("DAI");
     const dispatch = useNotification();
 
@@ -38,8 +38,14 @@ export default function ListModal({
     const price = 1200;
 
     const updateOptions = async () => {
+        let _allTokens: string[] = [];
+
+        _allTokens = allTokens.filter(function (t) {
+            return t !== token1;
+        });
+
         let _data: OptionProps[] = [];
-        allTokens.forEach(async (token, i) => {
+        _allTokens.forEach(async (token, i) => {
             _data.push({
                 id: token,
                 label: token,
@@ -72,12 +78,14 @@ export default function ListModal({
         }
     };
 
-    async function updateUI() {}
+    async function updateUI() {
+        setToken1(tokenNames[index]);
+        await updateOptions();
+    }
 
     useEffect(() => {
         updateUI();
-        updateOptions();
-    }, [isWeb3Enabled, amount1, amount2]);
+    }, [, amount1, amount2]);
 
     return (
         <div className="pt-2">
@@ -86,7 +94,7 @@ export default function ListModal({
                 onCancel={onClose}
                 onCloseButtonPressed={onClose}
                 onOk={() => {}}
-                title={`List ${tokenNames[index]}`}
+                title={`List ${token1}`}
                 width="450px"
                 isCentered={true}
                 isOkDisabled={isOkDisabled}
@@ -106,13 +114,18 @@ export default function ListModal({
                         disabled={isOkDisabled}
                     />
                     <Select
-                        defaultOptionIndex={0}
+                        defaultOptionIndex={1}
                         label="Sell"
                         onChange={async (OptionProps) => {
                             setToken1(OptionProps.label.toString());
                         }}
-                        options={OptionProps}
-                        disabled={isOkDisabled}
+                        options={[
+                            {
+                                id: token1,
+                                label: token1,
+                            },
+                        ]}
+                        disabled={true}
                     />
                     <div className="pt-6">
                         <Input

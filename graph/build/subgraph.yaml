@@ -8,6 +8,7 @@ dataSources:
     source:
       address: "0x3220B186031C99DDbe9c42eA29D96486D2164573"
       abi: P2P
+      startBlock: 7871075
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -18,7 +19,7 @@ dataSources:
         - ListToken
       abis:
         - name: P2P
-          file: P2P/abis/P2P.json
+          file: P2P\abis\P2P.json
       eventHandlers:
         - event: BuyToken(indexed address,indexed address,indexed address,address,uint256,uint256)
           handler: handleBuyToken
@@ -26,4 +27,4 @@ dataSources:
           handler: handleCancelListing
         - event: ListToken(indexed address,indexed address,indexed address,uint256,uint256,uint256)
           handler: handleListToken
-      file: P2P/P2P.wasm
+      file: P2P\P2P.wasm

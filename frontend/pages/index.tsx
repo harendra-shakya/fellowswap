@@ -1,5 +1,6 @@
 import { useMoralis } from "react-moralis";
 import Buy from "../components/Buy";
+import { NextPage } from "next";
 
 export default function Home(): JSX.Element {
     const { isWeb3Enabled, chainId, account } = useMoralis();
