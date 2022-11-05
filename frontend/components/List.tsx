@@ -23,7 +23,6 @@ export default function List(): JSX.Element {
 
     useEffect(() => {
         updateUI();
-        console.log("happening");
     }, [isWeb3Enabled, data]);
 
     async function updateUI() {
@@ -34,6 +33,7 @@ export default function List(): JSX.Element {
 
     async function fetchTokenAddreses() {
         try {
+            console.log("fetching token addressses!");
             setIsLoading(true);
             type Token = "WETH" | "DAI" | "WBTC" | "USDC";
             const addresses: string[] = [];
@@ -52,6 +52,8 @@ export default function List(): JSX.Element {
     }
 
     async function fetchBalances() {
+        console.log("fetching token balances!");
+
         const balances: string[] = [];
         try {
             const { ethereum } = window;
@@ -73,6 +75,8 @@ export default function List(): JSX.Element {
     }
 
     async function showTable() {
+        console.log("rendering table!");
+
         const rows: (string | JSX.Element)[][] = [];
         try {
             tokenNames.forEach((tokenName, i) => {
@@ -106,7 +110,7 @@ export default function List(): JSX.Element {
         <div>
             {isWeb3Enabled ? (
                 <div>
-                    {supportedNetworks.includes(parseInt(chainId!)) ? (
+                    {supportedNetworks.includes(parseInt(chainId!)) && !isLoading ? (
                         <div className="p-6">
                             <div className="p-8 pt-6 font-semibold text-3xl text-gray-500">
                                 Your Wallet

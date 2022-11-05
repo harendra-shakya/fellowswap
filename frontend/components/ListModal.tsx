@@ -33,14 +33,22 @@ export default function ListModal({
     const [token2, setToken2] = useState("DAI");
     const dispatch = useNotification();
 
-    const allTokens = ["WETH", "WBTC", "DAI", "USDC"];
-
     const price = 1200;
+
+    async function updateUI() {
+        await setToken1(tokenNames[index]);
+        await updateOptions();
+    }
+
+    useEffect(() => {
+        updateUI();
+        console.log("yes, yes")
+    }, [isWeb3Enabled, amount1, amount2, OptionProps]);
 
     const updateOptions = async () => {
         let _allTokens: string[] = [];
 
-        _allTokens = allTokens.filter(function (t) {
+        _allTokens = tokenNames.filter(function (t) {
             return t !== token1;
         });
 
@@ -78,14 +86,7 @@ export default function ListModal({
         }
     };
 
-    async function updateUI() {
-        setToken1(tokenNames[index]);
-        await updateOptions();
-    }
-
-    useEffect(() => {
-        updateUI();
-    }, [, amount1, amount2]);
+    
 
     return (
         <div className="pt-2">
@@ -114,7 +115,7 @@ export default function ListModal({
                         disabled={isOkDisabled}
                     />
                     <Select
-                        defaultOptionIndex={1}
+                        defaultOptionIndex={0}
                         label="Sell"
                         onChange={async (OptionProps) => {
                             setToken1(OptionProps.label.toString());
@@ -167,7 +168,6 @@ export default function ListModal({
                         label={`Limit`} // change
                         name="Amount"
                         type="text"
-                        value={amount2}
                         disabled={false}
                     />
                 </div>
