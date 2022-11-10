@@ -33,7 +33,6 @@ export default function List(): JSX.Element {
 
     async function fetchTokenAddreses() {
         try {
-            console.log("fetching token addressses!");
             setIsLoading(true);
             type Token = "WETH" | "DAI" | "WBTC" | "USDC";
             const addresses: string[] = [];
@@ -52,8 +51,6 @@ export default function List(): JSX.Element {
     }
 
     async function fetchBalances() {
-        console.log("fetching token balances!");
-
         const balances: string[] = [];
         try {
             const { ethereum } = window;

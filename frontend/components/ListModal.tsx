@@ -32,7 +32,7 @@ export default function ListModal({
     const [price, setPrice] = useState("0");
     const [OptionProps, setOptionProps] = useState<OptionProps[]>();
     const [token1, setToken1] = useState("");
-    const [token2, setToken2] = useState("DAI");
+    const [token2, setToken2] = useState("");
     const [limit, setLimit] = useState("0");
     const dispatch = useNotification();
 
@@ -43,23 +43,24 @@ export default function ListModal({
 
     useEffect(() => {
         updateUI();
-        console.log("yes, yes");
     }, [isWeb3Enabled, OptionProps]);
 
     const updateOptions = async () => {
-        let _allTokens: string[] = [];
+        let allTokens: string[] = [];
 
-        _allTokens = tokenNames.filter(function (t) {
+        allTokens = tokenNames.filter(function (t) {
             return t !== token1;
         });
 
         let _data: OptionProps[] = [];
-        _allTokens.forEach(async (token, i) => {
+
+        allTokens.forEach(async (token, i) => {
             _data.push({
                 id: token,
                 label: token,
             });
         });
+        setToken2(allTokens[0]);
         setOptionProps(_data);
     };
 
@@ -175,7 +176,7 @@ export default function ListModal({
                     </div>
                     <div className="pt-6">
                         <Select
-                            defaultOptionIndex={2}
+                            defaultOptionIndex={0}
                             label="Buy"
                             onChange={(OptionProps) => {
                                 setToken2(OptionProps.label.toString());
