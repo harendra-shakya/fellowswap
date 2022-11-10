@@ -36,11 +36,9 @@ export default function BuyModal({ isVisible, onClose }: BuyModalProps) {
     const updateInputs = async function (value: string) {
         try {
             setIsOkDisabled(true);
-            setTimeout(() => {
-                setAmount1(value);
-                const _amount2 = +value * price;
-                setAmount2(_amount2.toString());
-            }, 1000);
+            setAmount1(value);
+            const _amount2 = +value * price;
+            setAmount2(_amount2.toString());
             setIsOkDisabled(false);
         } catch (e) {
             console.log(e);

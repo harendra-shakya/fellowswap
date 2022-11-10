@@ -40,7 +40,6 @@
         "name": "buyToken",
         "constant": false,
         "payable": false,
-        "gas": 29000000,
         "inputs": [
             { "type": "address", "name": "_fromToken" },
             { "type": "address", "name": "_toToken" },
@@ -54,7 +53,6 @@
         "name": "cancelListing",
         "constant": false,
         "payable": false,
-        "gas": 29000000,
         "inputs": [
             { "type": "address", "name": "_fromToken" },
             { "type": "address", "name": "_toToken" }
@@ -67,7 +65,6 @@
         "constant": true,
         "stateMutability": "view",
         "payable": false,
-        "gas": 29000000,
         "inputs": [
             { "type": "address", "name": "_seller" },
             { "type": "address", "name": "_fromToken" },
@@ -91,7 +88,6 @@
         "name": "listToken",
         "constant": false,
         "payable": false,
-        "gas": 29000000,
         "inputs": [
             { "type": "address", "name": "_fromToken" },
             { "type": "address", "name": "_toToken" },

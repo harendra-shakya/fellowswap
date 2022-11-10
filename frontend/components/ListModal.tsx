@@ -4,6 +4,8 @@ import { useMoralis } from "react-moralis";
 import { ethers, Contract } from "ethers";
 import { OptionProps } from "@web3uikit/core";
 import contractAddresses from "../constants/networkMapping.json";
+import p2pAbi from "../constants/P2P.json";
+import erc20Abi from "../constants/Token.json";
 
 declare var window: any;
 
@@ -26,14 +28,13 @@ export default function ListModal({
 }: ListModalProps) {
     const { isWeb3Enabled, account, chainId } = useMoralis();
     const [isOkDisabled, setIsOkDisabled] = useState(false);
-    const [amount1, setAmount1] = useState("0");
-    const [amount2, setAmount2] = useState("0");
+    const [amount, setAmount] = useState("0");
+    const [price, setPrice] = useState("0");
     const [OptionProps, setOptionProps] = useState<OptionProps[]>();
     const [token1, setToken1] = useState("");
     const [token2, setToken2] = useState("DAI");
+    const [limit, setLimit] = useState("0");
     const dispatch = useNotification();
-
-    const price = 1200;
 
     async function updateUI() {
         await setToken1(tokenNames[index]);
@@ -42,8 +43,8 @@ export default function ListModal({
 
     useEffect(() => {
         updateUI();
-        console.log("yes, yes")
-    }, [isWeb3Enabled, amount1, amount2, OptionProps]);
+        console.log("yes, yes");
+    }, [isWeb3Enabled, OptionProps]);
 
     const updateOptions = async () => {
         let _allTokens: string[] = [];
@@ -62,31 +63,64 @@ export default function ListModal({
         setOptionProps(_data);
     };
 
+    const listToken = async () => {
+        try {
+            setIsOkDisabled(true);
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const _chainId: "31337" | "5" = parseInt(chainId!).toString() as "31337" | "5";
+            const p2pAddress = contractAddresses[_chainId]["P2P"][0];
+            type Token = "WETH" | "DAI" | "WBTC" | "USDC";
+
+            const p2p = new ethers.Contract(p2pAddress, p2pAbi, signer);
+            console.log("listing token");
+
+            const _token1: Token = token1 as Token;
+            const _token2: Token = token2 as Token;
+
+            const token1Addr: string = contractAddresses[_chainId][_token1][0];
+            const token2Addr: string = contractAddresses[_chainId][_token2][0];
+
+            const token1__ = await new ethers.Contract(token1Addr, erc20Abi, signer);
+            const token2__ = await new ethers.Contract(token1Addr, erc20Abi, signer);
+            // const tokenBalance = await token1__.balanceOf(account);
+            let deci1 = await token1__.decimals();
+            let deci2 = await token2__.decimals();
+
+            const _amount = ethers.utils.parseUnits(amount, deci1);
+            const _price = ethers.utils.parseUnits(price, deci2);
+            const _limit = ethers.utils.parseUnits(limit, deci1);
+            console.log("token1Addr", token1Addr);
+            console.log("token1Addr", token2Addr);
+            console.log("token1Addr", _price);
+            console.log("token1Addr", _amount);
+            console.log("token1Addr", _limit);
+
+            const tx = await p2p.listToken(token1Addr, token2Addr, _price, _amount, _limit);
+            console.log("receiving confirmations...");
+            const txReceipt = await tx.wait();
+            if (txReceipt.status === 1) {
+                console.log("listed");
+                handleListSuccess();
+            } else {
+                alert("Tx failed. Plz try agains!");
+            }
+            setIsOkDisabled(false);
+        } catch (e) {
+            console.log(e);
+            setIsOkDisabled(false);
+        }
+    };
+
     const handleListSuccess = async function () {
         onClose && onClose();
         dispatch({
             type: "success",
-            title: "Liquidity added!",
-            message: "Liquidity added - Please Refresh",
+            title: "Token Listed for sell!",
+            message: "Token Listed for sell - Please Refresh",
             position: "topL",
         });
     };
-
-    const updateInputs = async function (value: string) {
-        try {
-            setIsOkDisabled(true);
-            setTimeout(() => {
-                setAmount1(value);
-                const _amount2 = +value * price;
-                setAmount2(_amount2.toString());
-            }, 1000);
-            setIsOkDisabled(false);
-        } catch (e) {
-            console.log(e);
-        }
-    };
-
-    
 
     return (
         <div className="pt-2">
@@ -94,7 +128,7 @@ export default function ListModal({
                 isVisible={isVisible}
                 onCancel={onClose}
                 onCloseButtonPressed={onClose}
-                onOk={() => {}}
+                onOk={listToken}
                 title={`List ${token1}`}
                 width="450px"
                 isCentered={true}
@@ -107,11 +141,9 @@ export default function ListModal({
                         type="text"
                         onChange={(e) => {
                             if (e.target.value === "" || +e.target.value <= 0) return;
-                            setTimeout(() => {
-                                setAmount1(e.target.value);
-                            }, 1000);
+                            setAmount(e.target.value);
                         }}
-                        value={amount1}
+                        value={amount}
                         disabled={isOkDisabled}
                     />
                     <Select
@@ -135,12 +167,10 @@ export default function ListModal({
                             type="text"
                             onChange={(e) => {
                                 if (e.target.value === "" || +e.target.value <= 0) return;
-                                setTimeout(() => {
-                                    setAmount2(e.target.value);
-                                }, 1000);
+                                setPrice(e.target.value);
                             }}
                             disabled={false}
-                            value={amount2}
+                            value={price}
                         />
                     </div>
                     <div className="pt-6">
@@ -168,6 +198,10 @@ export default function ListModal({
                         label={`Limit`} // change
                         name="Amount"
                         type="text"
+                        onChange={(e) => {
+                            if (e.target.value === "" || +e.target.value <= 0) return;
+                            setLimit(e.target.value);
+                        }}
                         disabled={false}
                     />
                 </div>

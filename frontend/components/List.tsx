@@ -108,43 +108,31 @@ export default function List(): JSX.Element {
 
     return (
         <div>
-            {isWeb3Enabled ? (
-                <div>
-                    {supportedNetworks.includes(parseInt(chainId!)) && !isLoading ? (
-                        <div className="p-6">
-                            <div className="p-8 pt-6 font-semibold text-3xl text-gray-500">
-                                Your Wallet
-                            </div>
-                            <Table
-                                columnsConfig="60px 1fr 1fr 1fr 200px"
-                                data={data}
-                                header={[
-                                    "",
-                                    <span>Token</span>,
-                                    <span>Your Balance</span>,
-                                    <span>Price</span>, // use chainlink to get the prices
-                                    "",
-                                ]}
-                                maxPages={1}
-                                pageSize={8}
-                                isLoading={isLoading}
-                            />
-                            <ListModal
-                                isVisible={showSellModal}
-                                onClose={() => setShowSellModal(false)}
-                                index={index}
-                                tokenNames={tokenNames}
-                                tokenAddresses={tokenAddresses}
-                                tokenBalances={tokenBalances}
-                            />
-                        </div>
-                    ) : (
-                        <div>Plz Connect to a Supported network {supportedNetworks}</div>
-                    )}
-                </div>
-            ) : (
-                <div>Please Connect Your Wallet</div>
-            )}
+            <div className="p-6">
+                <div className="p-8 pt-6 font-semibold text-3xl text-gray-500">Your Wallet</div>
+                <Table
+                    columnsConfig="60px 1fr 1fr 1fr 200px"
+                    data={data}
+                    header={[
+                        "",
+                        <span>Token</span>,
+                        <span>Your Balance</span>,
+                        <span>Price</span>, // use chainlink to get the prices
+                        "",
+                    ]}
+                    maxPages={1}
+                    pageSize={8}
+                    isLoading={isLoading}
+                />
+                <ListModal
+                    isVisible={showSellModal}
+                    onClose={() => setShowSellModal(false)}
+                    index={index}
+                    tokenNames={tokenNames}
+                    tokenAddresses={tokenAddresses}
+                    tokenBalances={tokenBalances}
+                />
+            </div>
         </div>
     );
 }
