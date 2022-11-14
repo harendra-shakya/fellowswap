@@ -5,6 +5,12 @@ import Header from "../components/Header";
 import { MoralisProvider } from "react-moralis";
 import Head from "next/head";
 import { NotificationProvider } from "@web3uikit/core";
+import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
+
+const client = new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: "https://api.thegraph.com/subgraphs/name/harendra-shakya/p2p",
+});
 
 function MyApp({ Component, pageProps }: AppProps) {
     return (
@@ -15,10 +21,12 @@ function MyApp({ Component, pageProps }: AppProps) {
                 <link rel="icon" href="/logo.png" />
             </Head>
             <MoralisProvider initializeOnMount={false}>
-                <NotificationProvider>
-                    <Header />
-                    <Component {...pageProps} />
-                </NotificationProvider>
+                <ApolloProvider client={client}>
+                    <NotificationProvider>
+                        <Header />
+                        <Component {...pageProps} />
+                    </NotificationProvider>
+                </ApolloProvider>
             </MoralisProvider>
             <footer className="fixed bottom-0 left-2">
                 <p className="footer__copyright">

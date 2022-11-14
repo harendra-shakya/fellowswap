@@ -34,33 +34,35 @@ export default function ListModal({
     const [token1, setToken1] = useState("");
     const [token2, setToken2] = useState("");
     const [limit, setLimit] = useState("0");
+    const [info, setInfo] = useState("");
     const dispatch = useNotification();
 
     async function updateUI() {
         await setToken1(tokenNames[index]);
         await updateOptions();
+        await updateInfo();
     }
 
     useEffect(() => {
         updateUI();
     }, [isWeb3Enabled, OptionProps]);
 
+    const updateInfo = async () => {
+        setInfo("");
+        if (token1 == token2) {
+            setInfo("Info: Can't list same token");
+        }
+    };
+
     const updateOptions = async () => {
-        let allTokens: string[] = [];
-
-        allTokens = tokenNames.filter(function (t) {
-            return t !== token1;
-        });
-
         let _data: OptionProps[] = [];
 
-        allTokens.forEach(async (token, i) => {
+        tokenNames.forEach(async (token, i) => {
             _data.push({
                 id: token,
                 label: token,
             });
         });
-        setToken2(allTokens[0]);
         setOptionProps(_data);
     };
 
@@ -83,19 +85,13 @@ export default function ListModal({
             const token2Addr: string = contractAddresses[_chainId][_token2][0];
 
             const token1__ = await new ethers.Contract(token1Addr, erc20Abi, signer);
-            const token2__ = await new ethers.Contract(token1Addr, erc20Abi, signer);
-            // const tokenBalance = await token1__.balanceOf(account);
-            let deci1 = await token1__.decimals();
-            let deci2 = await token2__.decimals();
+            const token2__ = await new ethers.Contract(token2Addr, erc20Abi, signer);
+            const deci1 = await token1__.decimals();
+            const deci2 = await token2__.decimals();
 
             const _amount = ethers.utils.parseUnits(amount, deci1);
             const _price = ethers.utils.parseUnits(price, deci2);
             const _limit = ethers.utils.parseUnits(limit, deci1);
-            console.log("token1Addr", token1Addr);
-            console.log("token1Addr", token2Addr);
-            console.log("token1Addr", _price);
-            console.log("token1Addr", _amount);
-            console.log("token1Addr", _limit);
 
             const tx = await p2p.listToken(token1Addr, token2Addr, _price, _amount, _limit);
             console.log("receiving confirmations...");
@@ -133,7 +129,7 @@ export default function ListModal({
                 title={`List ${token1}`}
                 width="450px"
                 isCentered={true}
-                isOkDisabled={isOkDisabled}
+                isOkDisabled={info === "Info: Can't list same token" ? true : isOkDisabled}
             >
                 <div className="grid grid-cols-2 gap-3 place-content-stretch h-35">
                     <Input
@@ -176,7 +172,6 @@ export default function ListModal({
                     </div>
                     <div className="pt-6">
                         <Select
-                            defaultOptionIndex={0}
                             label="Buy"
                             onChange={(OptionProps) => {
                                 setToken2(OptionProps.label.toString());
@@ -207,6 +202,7 @@ export default function ListModal({
                     />
                 </div>
                 <div className="pb-6 pt-4">Price in USD: {price}</div>
+                <div className="pb-6 pt-4">{info}</div>
             </Modal>
         </div>
     );

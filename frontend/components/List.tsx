@@ -19,11 +19,15 @@ export default function List(): JSX.Element {
     const [index, setIndex] = useState<number>(0);
 
     const tokenNames = ["WBTC", "WETH", "DAI", "USDC"]; // it is just for testing
-    const supportedNetworks = [80001, 5];
+    console.log("data", data);
 
     useEffect(() => {
         updateUI();
-    }, [isWeb3Enabled, data]);
+    }, [isWeb3Enabled]);
+
+    useEffect(() => {
+        tokenBalances.length > 1 ? setIsLoading(false) : setIsLoading(true);
+    }, [isWeb3Enabled, tokenBalances]);
 
     async function updateUI() {
         await fetchTokenAddreses();
@@ -33,6 +37,7 @@ export default function List(): JSX.Element {
 
     async function fetchTokenAddreses() {
         try {
+            console.log("fetching address....");
             setIsLoading(true);
             type Token = "WETH" | "DAI" | "WBTC" | "USDC";
             const addresses: string[] = [];
@@ -42,7 +47,7 @@ export default function List(): JSX.Element {
                 const _token: Token = token as Token;
                 addresses.push(contractAddresses[_chainId][_token][0]);
             }
-
+            console.log("addresses", addresses);
             setTokenAddresses(addresses);
             setIsLoading(false);
         } catch (e) {
@@ -51,8 +56,9 @@ export default function List(): JSX.Element {
     }
 
     async function fetchBalances() {
-        const balances: string[] = [];
         try {
+            console.log("fetching balances....");
+            const balances: string[] = [];
             const { ethereum } = window;
             const provider = await new ethers.providers.Web3Provider(ethereum);
             const signer = await provider.getSigner();
@@ -62,7 +68,7 @@ export default function List(): JSX.Element {
                 let decimal = await token.decimals();
                 balances.push(ethers.utils.formatUnits(tokenBalance, decimal));
             }
-
+            console.log("balances", balances);
             setTokenBalances(balances);
             setIsLoading(false);
         } catch (e) {
@@ -72,15 +78,18 @@ export default function List(): JSX.Element {
     }
 
     async function showTable() {
-        console.log("rendering table!");
-
-        const rows: (string | JSX.Element)[][] = [];
         try {
-            tokenNames.forEach((tokenName, i) => {
+            console.log("rendering list table!");
+            const rows: (string | JSX.Element)[][] = [];
+            for (let i = 0; i < tokenNames.length; i++) {
                 if (+tokenBalances[i] > 0) {
                     rows.push([
-                        <Image src={`/${tokenName.toLowerCase()}.svg`} height="45" width="45" />,
-                        tokenName.toUpperCase().toString(),
+                        <Image
+                            src={`/${tokenNames[i].toLowerCase()}.svg`}
+                            height="45"
+                            width="45"
+                        />,
+                        tokenNames[i].toUpperCase().toString(),
                         `${tokenBalances[i]}`,
                         "$1200",
                         <Button
@@ -94,7 +103,8 @@ export default function List(): JSX.Element {
                         />,
                     ]);
                 }
-            });
+            }
+
             setData(rows);
             setIsLoading(false);
         } catch (e) {

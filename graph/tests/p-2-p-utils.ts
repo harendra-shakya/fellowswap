@@ -1,6 +1,6 @@
 import { newMockEvent } from "matchstick-as"
 import { ethereum, Address, BigInt } from "@graphprotocol/graph-ts"
-import { BuyToken, CancelListing, ListToken } from "../generated/P2P/P2P"
+import { BuyToken, CancelListing, ListToken } from "../generated/p2p/p2p"
 
 export function createBuyTokenEvent(
   buyer: Address,

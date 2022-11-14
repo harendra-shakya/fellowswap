@@ -249,33 +249,6 @@ export class TokenCanceled extends Entity {
   set toToken(value: Bytes) {
     this.set("toToken", Value.fromBytes(value));
   }
-
-  get amount(): BigInt {
-    let value = this.get("amount");
-    return value!.toBigInt();
-  }
-
-  set amount(value: BigInt) {
-    this.set("amount", Value.fromBigInt(value));
-  }
-
-  get price(): BigInt {
-    let value = this.get("price");
-    return value!.toBigInt();
-  }
-
-  set price(value: BigInt) {
-    this.set("price", Value.fromBigInt(value));
-  }
-
-  get limit(): BigInt {
-    let value = this.get("limit");
-    return value!.toBigInt();
-  }
-
-  set limit(value: BigInt) {
-    this.set("limit", Value.fromBigInt(value));
-  }
 }
 
 export class TokenBought extends Entity {

@@ -10,17 +10,9 @@ declare var window: any;
 type BuyModalProps = {
     isVisible: boolean;
     onClose: () => void;
-    listingData: {
-        fromToken: string;
-        toToken: string;
-        amount: string;
-        price: string;
-        limit: string;
-        seller: string;
-    };
 };
 
-export default function BuyModal({ isVisible, onClose, listingData }: BuyModalProps) {
+export default function CancelListingModal({ isVisible, onClose }: BuyModalProps) {
     const { isWeb3Enabled, account, chainId } = useMoralis();
     const [isOkDisabled, setIsOkDisabled] = useState(false);
     const [amount1, setAmount1] = useState("0");
@@ -28,7 +20,6 @@ export default function BuyModal({ isVisible, onClose, listingData }: BuyModalPr
     const dispatch = useNotification();
 
     const allTokens = ["WETH", "WBTC", "DAI", "USDC"];
-    const updatePrice = async function () {};
 
     const price = 1200;
 
