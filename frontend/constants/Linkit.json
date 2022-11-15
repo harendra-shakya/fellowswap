@@ -1,0 +1,19 @@
+[
+    {
+        "type": "constructor",
+        "payable": false,
+        "inputs": [
+            { "type": "string[]", "name": "tokens" },
+            { "type": "address[]", "name": "priceFeeds" }
+        ]
+    },
+    {
+        "type": "function",
+        "name": "getLatestPrice",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "inputs": [{ "type": "string", "name": "token" }],
+        "outputs": [{ "type": "uint256" }, { "type": "uint256" }]
+    }
+]

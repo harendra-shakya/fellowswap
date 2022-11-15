@@ -28,11 +28,11 @@ export default function ListModal({
 }: ListModalProps) {
     const { isWeb3Enabled, account, chainId } = useMoralis();
     const [isOkDisabled, setIsOkDisabled] = useState(false);
-    const [amount, setAmount] = useState("0");
-    const [price, setPrice] = useState("0");
     const [OptionProps, setOptionProps] = useState<OptionProps[]>();
     const [token1, setToken1] = useState("");
     const [token2, setToken2] = useState("");
+    const [amount, setAmount] = useState("0");
+    const [price, setPrice] = useState("0");
     const [limit, setLimit] = useState("0");
     const [info, setInfo] = useState("");
     const dispatch = useNotification();

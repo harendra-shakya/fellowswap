@@ -4,6 +4,10 @@ import { useMoralis } from "react-moralis";
 import { ethers, Contract } from "ethers";
 import { OptionProps } from "@web3uikit/core";
 import contractAddresses from "../constants/networkMapping.json";
+import p2pAbi from "../constants/P2P.json";
+import erc20Abi from "../constants/Token.json";
+import { getTokenName } from "../pages/helper";
+import { useQuery, gql } from "@apollo/client";
 
 declare var window: any;
 
@@ -17,48 +21,120 @@ type BuyModalProps = {
         price: string;
         limit: string;
         seller: string;
-    };
+    }[];
+    index: number;
 };
 
-export default function BuyModal({ isVisible, onClose, listingData }: BuyModalProps) {
+export default function BuyModal({ isVisible, onClose, listingData, index }: BuyModalProps) {
     const { isWeb3Enabled, account, chainId } = useMoralis();
     const [isOkDisabled, setIsOkDisabled] = useState(false);
     const [amount1, setAmount1] = useState("0");
     const [amount2, setAmount2] = useState("0");
-    const dispatch = useNotification();
+    const [token1, setToken1] = useState("");
+    const [token2, setToken2] = useState("");
+    const [amount, setAmount] = useState("0");
+    const [price, setPrice] = useState("0");
+    const [limit, setLimit] = useState("0");
+    const [info, setInfo] = useState("");
+    const GET_ACTIVE_ITEMS = gql`
+        {
+            activeTokens(
+                first: 5
+                where: { buyer: "0x0000000000000000000000000000000000000000" }
+            ) {
+                fromToken
+                toToken
+                amount
+                price
+                limit
+                seller
+            }
+        }
+    `;
 
-    const allTokens = ["WETH", "WBTC", "DAI", "USDC"];
-    const updatePrice = async function () {};
+    const { loading, error, data: listedToken } = useQuery(GET_ACTIVE_ITEMS);
+    console.log("data", listedToken);
 
-    const price = 1200;
+    if (isVisible) {
+        setTimeout(() => {
+            console.log("------------------------------------------");
+            const i: number = index!;
+            console.log("the index is", i);
+            console.log("listingData in BuyModal", listingData);
+            console.log("------------------------------------------");
+        }, 1000);
+    }
 
-    const handleBuySuccess = async function () {
-        onClose && onClose();
-        dispatch({
-            type: "success",
-            title: "Liquidity added!",
-            message: "Liquidity added - Please Refresh",
-            position: "topL",
-        });
+    async function updateUI() {
+        console.log("updating ui");
+        setToken1((await getTokenName(listingData[index]?.fromToken)).toString());
+        setToken2((await getTokenName(listingData[index]?.toToken)).toString());
+        await updatePrice();
+    }
+
+    useEffect(() => {
+        updateUI();
+    }, [isOkDisabled, isVisible, amount2, listingData[index]]);
+
+    console.log("price", price);
+
+    const updatePrice = async function () {
+        try {
+            if (listingData[index]?.fromToken == undefined) return;
+            console.log("updating prices");
+            setIsOkDisabled(true);
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const _chainId = parseInt(chainId!).toString();
+            console.log("1");
+            const p2pAddress = contractAddresses[_chainId]["P2P"][0];
+            console.log("2");
+            const p2p = new ethers.Contract(p2pAddress, p2pAbi, signer);
+
+            console.log("3");
+            const token1__ = await new ethers.Contract(
+                listingData[index]?.fromToken.toString(),
+                erc20Abi,
+                signer
+            );
+            const token2__ = await new ethers.Contract(
+                listingData[index].toToken.toString(),
+                erc20Abi,
+                signer
+            );
+            const deci1 = await token1__.decimals();
+            const deci2 = await token2__.decimals();
+
+            setAmount(ethers.utils.formatUnits(listingData[index].amount, deci1).toString());
+            console.log(
+                "setting this price",
+                ethers.utils.formatUnits(listingData[index].price.toString(), deci2).toString()
+            );
+            setPrice(
+                ethers.utils.formatUnits(listingData[index].price.toString(), deci2).toString()
+            );
+            setLimit(ethers.utils.formatUnits(listingData[index].limit, deci1).toString());
+
+            setIsOkDisabled(false);
+        } catch (e) {
+            console.log(e);
+            console.log("this error is comming from updateprices");
+            setIsOkDisabled(false);
+        }
     };
 
     const updateInputs = async function (value: string) {
         try {
             setIsOkDisabled(true);
+            const _amount2 = +value * +price;
             setAmount1(value);
-            const _amount2 = +value * price;
             setAmount2(_amount2.toString());
             setIsOkDisabled(false);
+            updateUI();
         } catch (e) {
             console.log(e);
         }
     };
-
-    async function updateUI() {}
-
-    useEffect(() => {
-        updateUI();
-    }, [isWeb3Enabled, amount1, amount2]);
 
     return (
         <div className="pt-2">
@@ -67,7 +143,7 @@ export default function BuyModal({ isVisible, onClose, listingData }: BuyModalPr
                 onCancel={onClose}
                 onCloseButtonPressed={onClose}
                 onOk={() => {}}
-                title={`Buy WETH`}
+                title={`Buy ${token1}`}
                 width="450px"
                 isCentered={true}
                 isOkDisabled={isOkDisabled}
@@ -83,13 +159,11 @@ export default function BuyModal({ isVisible, onClose, listingData }: BuyModalPr
                         }}
                     >
                         <Input
-                            label={`Buy ${"WETH"}`} // change
+                            label={`Buy ${token1}`} // change
                             name="Amount"
                             type="text"
                             onChange={(e) => {
-                                if (e.target.value === "" || +e.target.value <= 0) {
-                                    setAmount2("0");
-                                }
+                                if (e.target.value === "" || +e.target.value <= 0) return;
                                 updateInputs(e.target.value);
                             }}
                             value={amount1}
@@ -106,7 +180,7 @@ export default function BuyModal({ isVisible, onClose, listingData }: BuyModalPr
                         }}
                     >
                         <Input
-                            label={`Sell ${"DAI"}`} // change
+                            label={`Sell ${token2}`} // change
                             name="Amount"
                             type="text"
                             value={amount2}

@@ -6,17 +6,20 @@ import { ethers, Contract, ContractInterface } from "ethers";
 import contractAddresses from "../constants/networkMapping.json";
 import ListModal from "../components/ListModal";
 import erc20Abi from "../constants/Token.json";
+import linkitAbi from "../constants/Linkit.json";
+import addresses from "../constants/networkMapping.json";
 
 declare var window: any;
 
 export default function List(): JSX.Element {
     const { isWeb3Enabled, chainId, account } = useMoralis();
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [showSellModal, setShowSellModal] = useState<boolean>(false);
     const [tokenBalances, setTokenBalances] = useState<string[]>([]);
     const [tokenAddresses, setTokenAddresses] = useState<string[]>([]);
     const [data, setData] = useState<(string | JSX.Element)[][]>([]);
     const [index, setIndex] = useState<number>(0);
+    const [price, setPrice] = useState<number>();
 
     const tokenNames = ["WBTC", "WETH", "DAI", "USDC"]; // it is just for testing
     console.log("data", data);
@@ -26,7 +29,7 @@ export default function List(): JSX.Element {
     }, [isWeb3Enabled]);
 
     useEffect(() => {
-        tokenBalances.length > 1 ? setIsLoading(false) : setIsLoading(true);
+        if (tokenBalances.length == 0 || data.length == 0) updateUI();
     }, [isWeb3Enabled, tokenBalances]);
 
     async function updateUI() {
@@ -35,10 +38,18 @@ export default function List(): JSX.Element {
         await showTable();
     }
 
+    const getMarketPrice = async function (name: string) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = await provider.getSigner();
+        const address = addresses["80001"]["Linkit"][0];
+        const contract = await new ethers.Contract(address, linkitAbi, signer);
+        const data = await contract.getLatestPrice(name);
+        return parseInt(data[0]) / 10 ** parseInt(data[1]);
+    };
+
     async function fetchTokenAddreses() {
         try {
             console.log("fetching address....");
-            setIsLoading(true);
             type Token = "WETH" | "DAI" | "WBTC" | "USDC";
             const addresses: string[] = [];
             const _chainId: "31337" | "5" = parseInt(chainId!).toString() as "31337" | "5";
@@ -49,7 +60,6 @@ export default function List(): JSX.Element {
             }
             console.log("addresses", addresses);
             setTokenAddresses(addresses);
-            setIsLoading(false);
         } catch (e) {
             console.log(e);
         }
@@ -59,8 +69,7 @@ export default function List(): JSX.Element {
         try {
             console.log("fetching balances....");
             const balances: string[] = [];
-            const { ethereum } = window;
-            const provider = await new ethers.providers.Web3Provider(ethereum);
+            const provider = await new ethers.providers.Web3Provider(window.ethereum);
             const signer = await provider.getSigner();
             for (let tokenAddress of tokenAddresses) {
                 const token = await new ethers.Contract(tokenAddress, erc20Abi, signer);
@@ -70,7 +79,6 @@ export default function List(): JSX.Element {
             }
             console.log("balances", balances);
             setTokenBalances(balances);
-            setIsLoading(false);
         } catch (e) {
             console.log(e);
             console.log("Error is coming from fetchBalances");
@@ -82,7 +90,20 @@ export default function List(): JSX.Element {
             console.log("rendering list table!");
             const rows: (string | JSX.Element)[][] = [];
             for (let i = 0; i < tokenNames.length; i++) {
+                if (tokenBalances.length == 0) console.log("no token balances");
                 if (+tokenBalances[i] > 0) {
+                    let token: string = tokenNames[i];
+
+                    if (tokenNames[i].includes("W")) {
+                        token = token.substring(1);
+                    }
+                    // console.log("-------------------------------------------");
+                    // console.log("tokenN", token);
+
+                    const price = await getMarketPrice(token.toUpperCase());
+                    // console.log("and here is the price", price);
+                    // console.log("-------------------------------------------");
+
                     rows.push([
                         <Image
                             src={`/${tokenNames[i].toLowerCase()}.svg`}
@@ -91,9 +112,10 @@ export default function List(): JSX.Element {
                         />,
                         tokenNames[i].toUpperCase().toString(),
                         `${tokenBalances[i]}`,
-                        "$1200",
+                        `$${price}`,
                         <Button
                             onClick={() => {
+                                console.log("setting index");
                                 setIndex(i);
                                 setShowSellModal(true);
                             }}
@@ -124,7 +146,7 @@ export default function List(): JSX.Element {
                         "",
                         <span>Token</span>,
                         <span>Your Balance</span>,
-                        <span>Price</span>, // use chainlink to get the prices
+                        <span>Market Price</span>, // use chainlink to get the prices
                         "",
                     ]}
                     maxPages={1}

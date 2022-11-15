@@ -15,14 +15,17 @@ export default function Pool(): JSX.Element {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const { isWeb3Enabled, chainId, account } = useMoralis();
     const [data, setData] = useState<(string | JSX.Element)[][]>([]);
-    const [listingData, setListingData] = useState<{
-        fromToken: string;
-        toToken: string;
-        amount: string;
-        price: string;
-        limit: string;
-        seller: string;
-    }>();
+    const [listingData, setListingData] = useState<
+        {
+            fromToken: string;
+            toToken: string;
+            amount: string;
+            price: string;
+            limit: string;
+            seller: string;
+        }[]
+    >([]);
+    const [index, setIndex] = useState<number>(0);
 
     const [showBuyModal, setShowBuyModal] = useState<boolean>(false);
 
@@ -74,9 +77,7 @@ export default function Pool(): JSX.Element {
                     limit: string;
                     seller: string;
                 } = listedToken.activeTokens[i];
-                console.log("1");
                 if (seller !== account) return;
-                console.log("2");
                 const fromToken__ = await new ethers.Contract(fromToken, erc20Abi, signer);
                 const toToken__ = await new ethers.Contract(toToken, erc20Abi, signer);
 
@@ -90,6 +91,12 @@ export default function Pool(): JSX.Element {
                 const _price = await ethers.utils.formatUnits(price, deci2);
                 const _limit = await ethers.utils.formatUnits(limit, deci1);
 
+                console.log("------------------------------------------");
+                console.log("in buy the index is", i);
+                console.log("------------------------------------------");
+
+                let __i = i;
+
                 rows.push([
                     <Image src={`/${_fromToken.toLowerCase()}.svg`} height="45" width="45" />,
                     <Image src={`/${_toToken.toLowerCase()}.svg`} height="45" width="45" />,
@@ -99,9 +106,13 @@ export default function Pool(): JSX.Element {
                     `${_limit}`,
                     `${seller}`,
                     <Button
-                        onClick={() => {
+                        onClick={async () => {
+                            const _i = __i;
+                            console.log("setting this listing data", listedToken.activeTokens);
+                            console.log("setting the index", _i);
+                            setIndex(_i);
+                            setListingData(await listedToken.activeTokens);
                             setShowBuyModal(true);
-                            setListingData(listedToken.activeTokens[i]);
                         }}
                         text="Buy"
                         theme="primary"
@@ -114,7 +125,7 @@ export default function Pool(): JSX.Element {
             setIsLoading(false);
         } catch (e) {
             console.log(e);
-            console.log("This error is coming from showTable");
+            console.log("This error is coming from showTable, Buy");
         }
     }
 
@@ -142,6 +153,7 @@ export default function Pool(): JSX.Element {
                 isVisible={showBuyModal}
                 onClose={() => setShowBuyModal(false)}
                 listingData={listingData!}
+                index={index}
             />
         </div>
     );
