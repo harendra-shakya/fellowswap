@@ -201,7 +201,7 @@ export default function ListModal({
                         disabled={false}
                     />
                 </div>
-                <div className="pb-6 pt-4">Price in USD: {price}</div>
+                {/* <div className="pb-6 pt-4">Price in USD: {price}</div> */}
                 <div className="pb-6 pt-4">{info}</div>
             </Modal>
         </div>

@@ -19,10 +19,10 @@ export default function List(): JSX.Element {
     const [tokenAddresses, setTokenAddresses] = useState<string[]>([]);
     const [data, setData] = useState<(string | JSX.Element)[][]>([]);
     const [index, setIndex] = useState<number>(0);
-    const [price, setPrice] = useState<number>();
+    // const [price, setPrice] = useState<number>();
 
     const tokenNames = ["WBTC", "WETH", "DAI", "USDC"]; // it is just for testing
-    console.log("data", data);
+    // console.log("data", data);
 
     useEffect(() => {
         updateUI();
@@ -88,43 +88,46 @@ export default function List(): JSX.Element {
     async function showTable() {
         try {
             console.log("rendering list table!");
+            if (tokenBalances.length == 0) {
+                console.log("no token balances");
+                return;
+            }
             const rows: (string | JSX.Element)[][] = [];
+            const prices: number[] = [];
+
             for (let i = 0; i < tokenNames.length; i++) {
-                if (tokenBalances.length == 0) console.log("no token balances");
-                if (+tokenBalances[i] > 0) {
-                    let token: string = tokenNames[i];
+                let token = tokenNames[i];
+                if (token.includes("W")) token = token.substring(1);
+                prices.push(await getMarketPrice(token.toUpperCase()));
+            }
 
-                    if (tokenNames[i].includes("W")) {
-                        token = token.substring(1);
-                    }
-                    // console.log("-------------------------------------------");
-                    // console.log("tokenN", token);
+            // console.log("newArray", newArr);
+            // console.log("prices", prices);
 
-                    const price = await getMarketPrice(token.toUpperCase());
-                    // console.log("and here is the price", price);
-                    // console.log("-------------------------------------------");
+            for (let i = 0; i < tokenNames.length; i++) {
+                if (+tokenBalances[i] <= 0) return;
 
-                    rows.push([
-                        <Image
-                            src={`/${tokenNames[i].toLowerCase()}.svg`}
-                            height="45"
-                            width="45"
-                        />,
-                        tokenNames[i].toUpperCase().toString(),
-                        `${tokenBalances[i]}`,
-                        `$${price}`,
-                        <Button
-                            onClick={() => {
-                                console.log("setting index");
-                                setIndex(i);
-                                setShowSellModal(true);
-                            }}
-                            text="List"
-                            theme="primary"
-                            size="large"
-                        />,
-                    ]);
-                }
+                // console.log("-------------------------------------------");
+                // console.log("tokenN", token);
+                // const price = await getMarketPrice(token.toUpperCase());
+                // console.log("and here is the price", price);
+                // console.log("-------------------------------------------");
+                rows.push([
+                    <Image src={`/${tokenNames[i].toLowerCase()}.svg`} height="45" width="45" />,
+                    tokenNames[i].toUpperCase().toString(),
+                    `${tokenBalances[i]}`,
+                    `$${prices[i]}`,
+                    <Button
+                        onClick={() => {
+                            console.log("setting index", i);
+                            setIndex(i);
+                            setShowSellModal(true);
+                        }}
+                        text="List"
+                        theme="primary"
+                        size="large"
+                    />,
+                ]);
             }
 
             setData(rows);

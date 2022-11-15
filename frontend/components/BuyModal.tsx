@@ -21,7 +21,7 @@ type BuyModalProps = {
         price: string;
         limit: string;
         seller: string;
-    }[];
+    };
     index: number;
 };
 
@@ -55,34 +55,23 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
     const { loading, error, data: listedToken } = useQuery(GET_ACTIVE_ITEMS);
     console.log("data", listedToken);
 
-    if (isVisible) {
-        setTimeout(() => {
-            console.log("------------------------------------------");
-            const i: number = index!;
-            console.log("the index is", i);
-            console.log("listingData in BuyModal", listingData);
-            console.log("------------------------------------------");
-        }, 1000);
-    }
-
     async function updateUI() {
         console.log("updating ui");
-        setToken1((await getTokenName(listingData[index]?.fromToken)).toString());
-        setToken2((await getTokenName(listingData[index]?.toToken)).toString());
+        setToken1((await getTokenName(listingData?.fromToken)).toString());
+        setToken2((await getTokenName(listingData?.toToken)).toString());
         await updatePrice();
     }
 
     useEffect(() => {
         updateUI();
-    }, [isOkDisabled, isVisible, amount2, listingData[index]]);
+    }, [isOkDisabled, isVisible, amount2, listingData]);
 
     console.log("price", price);
 
     const updatePrice = async function () {
         try {
-            if (listingData[index]?.fromToken == undefined) return;
+            if (listingData?.fromToken == undefined) return;
             console.log("updating prices");
-            setIsOkDisabled(true);
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = provider.getSigner();
             const _chainId = parseInt(chainId!).toString();
@@ -93,27 +82,25 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
 
             console.log("3");
             const token1__ = await new ethers.Contract(
-                listingData[index]?.fromToken.toString(),
+                listingData?.fromToken.toString(),
                 erc20Abi,
                 signer
             );
             const token2__ = await new ethers.Contract(
-                listingData[index].toToken.toString(),
+                listingData.toToken.toString(),
                 erc20Abi,
                 signer
             );
             const deci1 = await token1__.decimals();
             const deci2 = await token2__.decimals();
 
-            setAmount(ethers.utils.formatUnits(listingData[index].amount, deci1).toString());
+            setAmount(ethers.utils.formatUnits(listingData.amount, deci1).toString());
             console.log(
                 "setting this price",
-                ethers.utils.formatUnits(listingData[index].price.toString(), deci2).toString()
+                ethers.utils.formatUnits(listingData.price.toString(), deci2).toString()
             );
-            setPrice(
-                ethers.utils.formatUnits(listingData[index].price.toString(), deci2).toString()
-            );
-            setLimit(ethers.utils.formatUnits(listingData[index].limit, deci1).toString());
+            setPrice(ethers.utils.formatUnits(listingData.price.toString(), deci2).toString());
+            setLimit(ethers.utils.formatUnits(listingData.limit, deci1).toString());
 
             setIsOkDisabled(false);
         } catch (e) {
@@ -188,8 +175,8 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
                         />
                     </div>
                 </div>
-                <div className="pt-4">Seller: </div>
-                <div className="pb-6">Price: {price}</div>
+                <div className="pt-4">Price: {price}</div>
+                <div className="pb-6">Seller: {listingData.seller}</div>
             </Modal>
         </div>
     );

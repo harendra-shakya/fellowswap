@@ -52,15 +52,44 @@ export default function Pool(): JSX.Element {
         if (isWeb3Enabled && !loading) showTable();
     }, [isWeb3Enabled, listedToken, loading]);
 
+    const getData = async function (
+        fromToken: string,
+        toToken: string,
+        amount: string,
+        price: string,
+        limit: string
+    ) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const fromToken__ = await new ethers.Contract(fromToken, erc20Abi, signer);
+        const toToken__ = await new ethers.Contract(toToken, erc20Abi, signer);
+
+        const deci1 = await fromToken__.decimals();
+        const deci2 = await toToken__.decimals();
+
+        const _fromToken: string = await getTokenName(fromToken);
+        const _toToken: string = await getTokenName(toToken);
+
+        const _amount = await ethers.utils.formatUnits(amount, deci1);
+        const _price = await ethers.utils.formatUnits(price, deci2);
+        const _limit = await ethers.utils.formatUnits(limit, deci1);
+
+        return { _fromToken, _toToken, _amount, _price, _limit };
+    };
+
     async function showTable() {
         try {
             setIsLoading(true);
             console.log("rendering table!");
 
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
-
             const rows: (string | JSX.Element)[][] = [];
+
+            const fromTokens: string[] = [];
+            const toTokens: string[] = [];
+            const amounts: string[] = [];
+            const limits: string[] = [];
+            const prices: string[] = [];
+
             for (let i = 0; i < listedToken.activeTokens.length; i++) {
                 const {
                     fromToken,
@@ -78,40 +107,47 @@ export default function Pool(): JSX.Element {
                     seller: string;
                 } = listedToken.activeTokens[i];
                 if (seller !== account) return;
-                const fromToken__ = await new ethers.Contract(fromToken, erc20Abi, signer);
-                const toToken__ = await new ethers.Contract(toToken, erc20Abi, signer);
 
-                const deci1 = await fromToken__.decimals();
-                const deci2 = await toToken__.decimals();
+                const { _fromToken, _toToken, _amount, _price, _limit } = await getData(
+                    fromToken,
+                    toToken,
+                    amount,
+                    price,
+                    limit
+                );
+                fromTokens.push(_fromToken);
+                toTokens.push(_toToken);
+                amounts.push(_amount);
+                prices.push(_price);
+                limits.push(_limit);
+            }
 
-                const _fromToken: string = await getTokenName(fromToken);
-                const _toToken: string = await getTokenName(toToken);
-
-                const _amount = await ethers.utils.formatUnits(amount, deci1);
-                const _price = await ethers.utils.formatUnits(price, deci2);
-                const _limit = await ethers.utils.formatUnits(limit, deci1);
+            for (let i = 0; i < listedToken.activeTokens.length; i++) {
+                const {
+                    seller,
+                }: {
+                    seller: string;
+                } = listedToken.activeTokens[i];
+                if (seller !== account) return;
 
                 console.log("------------------------------------------");
                 console.log("in buy the index is", i);
                 console.log("------------------------------------------");
 
-                let __i = i;
-
                 rows.push([
-                    <Image src={`/${_fromToken.toLowerCase()}.svg`} height="45" width="45" />,
-                    <Image src={`/${_toToken.toLowerCase()}.svg`} height="45" width="45" />,
-                    _fromToken,
-                    `${`${_price} ${_toToken} / ${_fromToken}`}`,
-                    `${_amount}`,
-                    `${_limit}`,
+                    <Image src={`/${fromTokens[i].toLowerCase()}.svg`} height="45" width="45" />,
+                    <Image src={`/${toTokens[i].toLowerCase()}.svg`} height="45" width="45" />,
+                    fromTokens[i],
+                    `${`${prices[i]} ${toTokens[i]} / ${fromTokens[i]}`}`,
+                    `${amounts[i]}`,
+                    `${limits[i]}`,
                     `${seller}`,
                     <Button
                         onClick={async () => {
-                            const _i = __i;
                             console.log("setting this listing data", listedToken.activeTokens);
-                            console.log("setting the index", _i);
-                            setIndex(_i);
-                            setListingData(await listedToken.activeTokens);
+                            console.log("setting the index", i);
+                            setIndex(i);
+                            setListingData(await listedToken.activeTokens[i]);
                             setShowBuyModal(true);
                         }}
                         text="Buy"
