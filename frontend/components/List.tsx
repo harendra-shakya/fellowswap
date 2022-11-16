@@ -113,7 +113,7 @@ export default function List(): JSX.Element {
                     // console.log("-------------------------------------------");
                     rows.push([
                         <Image
-                            src={`/${tokenNames[i].toLowerCase()}.svg`}
+                            src={`/svg/${tokenNames[i].toLowerCase()}.svg`}
                             height="45"
                             width="45"
                         />,
@@ -144,7 +144,7 @@ export default function List(): JSX.Element {
 
     return (
         <div>
-            <div className="p-6">
+            <div className="">
                 <div className="p-8 pt-6 font-semibold text-3xl text-gray-500">Your Wallet</div>
                 <Table
                     columnsConfig="60px 1fr 1fr 1fr 200px"

@@ -8,6 +8,7 @@ import { ethers, Contract, ContractInterface } from "ethers";
 import erc20Abi from "../constants/Token.json";
 import contractAddresses from "../constants/networkMapping.json";
 import { getTokenName } from "../pages/helper";
+import styles from "../styles/Home.module.css";
 
 declare var window: any;
 
@@ -131,8 +132,12 @@ export default function Pool(): JSX.Element {
                 console.log("------------------------------------------");
 
                 rows.push([
-                    <Image src={`/${fromTokens[i].toLowerCase()}.svg`} height="45" width="45" />,
-                    <Image src={`/${toTokens[i].toLowerCase()}.svg`} height="45" width="45" />,
+                    <Image
+                        src={`/svg/${fromTokens[i].toLowerCase()}.svg`}
+                        height="45"
+                        width="45"
+                    />,
+                    <Image src={`/svg/${toTokens[i].toLowerCase()}.svg`} height="45" width="45" />,
                     fromTokens[i],
                     `${`${prices[i]} ${toTokens[i]} / ${fromTokens[i]}`}`,
                     `${amounts[i]}`,
@@ -162,7 +167,7 @@ export default function Pool(): JSX.Element {
     }
 
     return (
-        <div className="p-6">
+        <div className={`${styles.bgImg} px-28 p-6`}>
             <div className="p-8 pt-6 font-semibold text-3xl text-gray-500">Buy Token</div>
             <Table
                 columnsConfig="60px 35px 1fr 1fr 1fr 1fr 2fr 200px"

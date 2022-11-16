@@ -11,6 +11,7 @@ import List from "../components/List";
 import { useQuery, gql, from } from "@apollo/client";
 import tokenNames from "../constants/helper.json";
 import { getTokenName } from "./helper";
+import styles from "../styles/Home.module.css";
 
 declare var window: any;
 
@@ -127,8 +128,8 @@ export default function Sell(): JSX.Element {
                 const _limit = await ethers.utils.formatUnits(limit, deci1);
 
                 rows.push([
-                    <Image src={`/${_fromToken.toLowerCase()}.svg`} height="45" width="45" />,
-                    <Image src={`/${_toToken.toLowerCase()}.svg`} height="45" width="45" />,
+                    <Image src={`/svg/${_fromToken.toLowerCase()}.svg`} height="45" width="45" />,
+                    <Image src={`/svg/${_toToken.toLowerCase()}.svg`} height="45" width="45" />,
                     _fromToken,
                     `${`${_price} ${_toToken} / ${_fromToken}`}`,
                     `${_amount}`,
@@ -158,7 +159,7 @@ export default function Sell(): JSX.Element {
             {isWeb3Enabled ? (
                 <div>
                     {supportedNetworks.includes(parseInt(chainId!)) && !loading ? (
-                        <div className="p-6">
+                        <div className={`${styles.bgImg} px-28 p-6`}>
                             <div className="p-8 pt-6 font-semibold text-3xl text-gray-500">
                                 Your Listed Tokens
                             </div>

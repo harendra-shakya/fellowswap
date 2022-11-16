@@ -12,6 +12,11 @@
     align-items: center;
 }
 
+.bgImg {
+    height: 100vh;
+    background-image: url("/bg-header.jpg");
+}
+
 .footer {
     display: flex;
     flex: 1;
