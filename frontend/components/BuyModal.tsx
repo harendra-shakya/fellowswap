@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 import contractAddresses from "../constants/networkMapping.json";
 import p2pAbi from "../constants/P2P.json";
 import erc20Abi from "../constants/Token.json";
-import { getTokenName } from "../pages/helper";
+import { getTokenName } from "./helper";
 import { useQuery, gql } from "@apollo/client";
 
 declare var window: any;

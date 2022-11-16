@@ -10,7 +10,7 @@ import { Modal, useNotification, Input, Select } from "@web3uikit/core";
 import List from "../components/List";
 import { useQuery, gql, from } from "@apollo/client";
 import tokenNames from "../constants/helper.json";
-import { getTokenName } from "./helper";
+import { getTokenName } from "../components/helper";
 import styles from "../styles/Home.module.css";
 
 declare var window: any;

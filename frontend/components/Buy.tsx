@@ -6,8 +6,9 @@ import BuyModal from "./BuyModal";
 import { useQuery, gql } from "@apollo/client";
 import { ethers, Contract, ContractInterface } from "ethers";
 import erc20Abi from "../constants/Token.json";
-import { getTokenName } from "../pages/helper";
+import { getTokenName } from "../components/helper";
 import styles from "../styles/Home.module.css";
+import tokenNames from "../constants/helper.json";
 
 declare var window: any;
 
