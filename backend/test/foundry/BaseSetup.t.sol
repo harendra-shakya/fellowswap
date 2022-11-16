@@ -12,6 +12,8 @@ contract BaseSetup is Test {
     GenericERC20 public dai;
     GenericERC20 public usdc;
     GenericERC20 public weth;
+    GenericERC20 public wbtc;
+
     uint256 public constant PRICE = 1200 ether;
     uint256 public constant AMOUNT = 10 ether;
     uint256 public constant LIMIT = 3 ether;
@@ -20,12 +22,15 @@ contract BaseSetup is Test {
 
     function setUp() public virtual {
         p2p = new P2P();
+
+        vm.startPrank(user);
+        wbtc = new GenericERC20("WBTC", "WBTC", 8);
+        weth = new GenericERC20("WETH", "WETH", 18);
+        vm.stopPrank();
+
         vm.startPrank(user2);
         dai = new GenericERC20("DAI", "DAI", 18);
-        vm.stopPrank();
-        vm.startPrank(user);
         usdc = new GenericERC20("USDC", "USDC", 6);
-        weth = new GenericERC20("WETH", "WETH", 18);
         vm.stopPrank();
     }
 }

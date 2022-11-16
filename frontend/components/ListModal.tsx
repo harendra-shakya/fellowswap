@@ -93,9 +93,17 @@ export default function ListModal({
             const _price = ethers.utils.parseUnits(price, deci2);
             const _limit = ethers.utils.parseUnits(limit, deci1);
 
-            const tx = await p2p.listToken(token1Addr, token2Addr, _price, _amount, _limit);
+            let tx = await token1__.approve(p2pAddress, _amount);
+            let txReceipt = await tx.wait(1);
+            if (txReceipt.status === 1) {
+                console.log("aprroved");
+            } else {
+                alert("Tx failed. Plz try agains!");
+            }
+
+            tx = await p2p.listToken(token1Addr, token2Addr, _price, _amount, _limit);
             console.log("receiving confirmations...");
-            const txReceipt = await tx.wait();
+            txReceipt = await tx.wait();
             if (txReceipt.status === 1) {
                 console.log("listed");
                 handleListSuccess();

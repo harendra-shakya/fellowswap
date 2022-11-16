@@ -32,7 +32,7 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
     const [amount2, setAmount2] = useState("0");
     const [token1, setToken1] = useState("");
     const [token2, setToken2] = useState("");
-    const [amount, setAmount] = useState("0");
+    const [availableTokens, setAvailableTokens] = useState("0");
     const [price, setPrice] = useState("0");
     const [limit, setLimit] = useState("0");
     const [info, setInfo] = useState("");
@@ -74,13 +74,7 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
             console.log("updating prices");
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = provider.getSigner();
-            const _chainId = parseInt(chainId!).toString();
-            console.log("1");
-            const p2pAddress = contractAddresses[_chainId]["P2P"][0];
-            console.log("2");
-            const p2p = new ethers.Contract(p2pAddress, p2pAbi, signer);
 
-            console.log("3");
             const token1__ = await new ethers.Contract(
                 listingData?.fromToken.toString(),
                 erc20Abi,
@@ -94,18 +88,77 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
             const deci1 = await token1__.decimals();
             const deci2 = await token2__.decimals();
 
-            setAmount(ethers.utils.formatUnits(listingData.amount, deci1).toString());
+            setAvailableTokens(ethers.utils.formatUnits(listingData?.amount, deci1).toString());
             console.log(
                 "setting this price",
-                ethers.utils.formatUnits(listingData.price.toString(), deci2).toString()
+                ethers.utils.formatUnits(listingData?.price.toString(), deci2).toString()
             );
-            setPrice(ethers.utils.formatUnits(listingData.price.toString(), deci2).toString());
-            setLimit(ethers.utils.formatUnits(listingData.limit, deci1).toString());
+            setPrice(ethers.utils.formatUnits(listingData?.price.toString(), deci2).toString());
+            setLimit(ethers.utils.formatUnits(listingData?.limit, deci1).toString());
 
             setIsOkDisabled(false);
         } catch (e) {
             console.log(e);
             console.log("this error is comming from updateprices");
+            setIsOkDisabled(false);
+        }
+    };
+
+    const buyToken = async () => {
+        try {
+            setIsOkDisabled(true);
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const _chainId: "31337" | "5" = parseInt(chainId!).toString() as "31337" | "5";
+
+            const toToken = await new ethers.Contract(
+                listingData?.toToken.toString(),
+                erc20Abi,
+                signer
+            );
+
+            let decimals = await toToken.decimals();
+
+            const p2pAddress = contractAddresses[_chainId]["P2P"][0];
+            const p2p = new ethers.Contract(p2pAddress, p2pAbi, signer);
+            console.log("buting token");
+
+            const approveAmount = ethers.utils.parseUnits(amount2, decimals);
+
+            let tx = await toToken.approve(p2pAddress, approveAmount);
+            let txReceipt = await tx.wait(1);
+            if (txReceipt.status === 1) {
+                console.log("aprroved");
+            } else {
+                alert("Tx failed. Plz try agains!");
+            }
+
+            const fromToken = await new ethers.Contract(
+                listingData?.fromToken.toString(),
+                erc20Abi,
+                signer
+            );
+
+            decimals = await fromToken.decimals();
+
+            const _amount = ethers.utils.parseUnits(amount1, decimals);
+
+            tx = await p2p.buyToken(
+                listingData?.toToken.toString(),
+                listingData?.fromToken.toString(),
+                listingData?.seller.toString(),
+                _amount
+            );
+            console.log("receiving confirmations...");
+            txReceipt = await tx.wait();
+            if (txReceipt.status === 1) {
+                alert("Token bought!");
+            } else {
+                alert("Tx failed. Plz try agains!");
+            }
+            setIsOkDisabled(false);
+        } catch (e) {
+            console.log(e);
             setIsOkDisabled(false);
         }
     };
@@ -129,7 +182,7 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
                 isVisible={isVisible}
                 onCancel={onClose}
                 onCloseButtonPressed={onClose}
-                onOk={() => {}}
+                onOk={buyToken}
                 title={`Buy ${token1}`}
                 width="450px"
                 isCentered={true}
@@ -176,7 +229,9 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
                     </div>
                 </div>
                 <div className="pt-4">Price: {price}</div>
-                <div className="pb-6">Seller: {listingData.seller}</div>
+                <div className="">Available: {availableTokens}</div>
+                <div className="">Minimum Buy: {limit}</div>
+                <div className="pb-6">Seller: {listingData?.seller}</div>
             </Modal>
         </div>
     );

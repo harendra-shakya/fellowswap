@@ -24,6 +24,13 @@ const deployFunction: DeployFunction = async ({ getNamedAccounts, deployments })
         waitConfirmations: waitConfirmations,
     });
 
+    await deploy("GenericERC20", {
+        from: deployer,
+        log: true,
+        args: ["MOCK", "MOCK", 18],
+        waitConfirmations: waitConfirmations,
+    });
+
     log("deployed!");
 
     if (

@@ -15,16 +15,14 @@ export default function Pool(): JSX.Element {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const { isWeb3Enabled, chainId, account } = useMoralis();
     const [data, setData] = useState<(string | JSX.Element)[][]>([]);
-    const [listingData, setListingData] = useState<
-        {
-            fromToken: string;
-            toToken: string;
-            amount: string;
-            price: string;
-            limit: string;
-            seller: string;
-        }[]
-    >([]);
+    const [listingData, setListingData] = useState<{
+        fromToken: string;
+        toToken: string;
+        amount: string;
+        price: string;
+        limit: string;
+        seller: string;
+    }>();
     const [index, setIndex] = useState<number>(0);
 
     const [showBuyModal, setShowBuyModal] = useState<boolean>(false);
@@ -106,7 +104,6 @@ export default function Pool(): JSX.Element {
                     limit: string;
                     seller: string;
                 } = listedToken.activeTokens[i];
-                if (seller !== account) return;
 
                 const { _fromToken, _toToken, _amount, _price, _limit } = await getData(
                     fromToken,
@@ -128,7 +125,6 @@ export default function Pool(): JSX.Element {
                 }: {
                     seller: string;
                 } = listedToken.activeTokens[i];
-                if (seller !== account) return;
 
                 console.log("------------------------------------------");
                 console.log("in buy the index is", i);

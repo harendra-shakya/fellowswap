@@ -39,8 +39,14 @@ contract ListTokenTest is BaseSetup {
     function testRevertIfAmountIsMoreThanBalance() public {
         this.setUp();
         vm.prank(user);
-        vm.expectRevert(abi.encodePacked("P2P: Not have enough tokens"));
-        p2p.listToken(address(weth), address(dai), PRICE, 10000000 ether, LIMIT);
+        vm.expectRevert(abi.encodePacked("P2P: Amount Exceeds balance"));
+        p2p.listToken(
+            address(weth),
+            address(dai),
+            PRICE,
+            100000000000000000000000000 ether,
+            LIMIT
+        );
     }
 
     function testRevertIfAmountIsLessThanLimit() public {

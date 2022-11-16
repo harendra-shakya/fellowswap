@@ -131,6 +131,7 @@ export default function List(): JSX.Element {
             }
 
             setData(rows);
+            console.log("data", data);
             setIsLoading(false);
         } catch (e) {
             console.log(e);

@@ -63,7 +63,7 @@ contract P2P is ReentrancyGuard {
         require(_amount > 0, "P2P: Invalid Amount");
         require(
             IERC20Metadata(_fromToken).balanceOf(msg.sender) >= _amount,
-            "P2P: Not have enough tokens"
+            "P2P: Amount Exceeds balance"
         );
         _;
     }
@@ -124,18 +124,19 @@ contract P2P is ReentrancyGuard {
         Listing memory listing = listings[_seller][_toToken][_fromToken];
         require(_amount >= listing.limit && _amount <= listing.amount, "P2P: Out of limit");
 
+        uint256 decimals = 10**IERC20Metadata(_toToken).decimals();
+
         // `seller from` = `buyer to` and vice versa
         TransferHelpers.safeTranferFrom(
             _fromToken,
             msg.sender,
             address(this),
-            (listing.price * _amount) / 10**IERC20Metadata(_fromToken).decimals()
+            (listing.price * _amount) / decimals
         ); // buyer -> contract
         TransferHelpers.safeTranferFrom(_toToken, _seller, address(this), _amount); // seller -> contract
 
         uint256 amount = (_amount * 9998) / 10000; // fee
-        uint256 amount2 = ((listing.price * _amount * 9998) /
-            10**IERC20Metadata(_fromToken).decimals()) / 10000; // fee
+        uint256 amount2 = ((listing.price * _amount * 9998) / decimals) / 10000; // fee
         // TODO: Remove this 1 ether
         updateListing(
             _seller,

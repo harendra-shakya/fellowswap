@@ -109,7 +109,10 @@ export default function Sell(): JSX.Element {
                     limit: string;
                     seller: string;
                 } = listedToken.activeTokens[i];
-                if (seller !== account) return;
+                if (seller !== account) {
+                    setIsLoading(false);
+                    return;
+                }
                 const fromToken__ = await new ethers.Contract(fromToken, erc20Abi, signer);
                 const toToken__ = await new ethers.Contract(toToken, erc20Abi, signer);
 
