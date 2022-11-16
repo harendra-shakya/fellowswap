@@ -64,7 +64,6 @@ export default function Sell(): JSX.Element {
             const txReceipt = await tx.wait();
             if (txReceipt.status === 1) {
                 console.log("listed");
-                alert("Token removed from listing!");
                 handleCancelSuccess();
             } else {
                 alert("Tx failed. Plz try agains!");

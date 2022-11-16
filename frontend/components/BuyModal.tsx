@@ -36,6 +36,8 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
     const [price, setPrice] = useState("0");
     const [limit, setLimit] = useState("0");
     const [info, setInfo] = useState("");
+    const dispatch = useNotification();
+
     const GET_ACTIVE_ITEMS = gql`
         {
             activeTokens(
@@ -154,7 +156,7 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
             console.log("receiving confirmations...");
             txReceipt = await tx.wait();
             if (txReceipt.status === 1) {
-                alert("Token bought!");
+                handleBuySuccess();
             } else {
                 alert("Tx failed. Plz try agains!");
             }
@@ -163,6 +165,16 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
             console.log(e);
             setIsOkDisabled(false);
         }
+    };
+
+    const handleBuySuccess = async function () {
+        onClose && onClose();
+        dispatch({
+            type: "success",
+            title: "Token Bought!",
+            message: "Token Bought - Please Refresh",
+            position: "topL",
+        });
     };
 
     const updateInputs = async function (value: string) {
