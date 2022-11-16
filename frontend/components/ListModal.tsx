@@ -16,6 +16,7 @@ type ListModalProps = {
     tokenNames: string[];
     tokenAddresses: string[];
     tokenBalances: string[];
+    marketPrice: string;
 };
 
 export default function ListModal({
@@ -25,11 +26,11 @@ export default function ListModal({
     tokenNames,
     tokenAddresses,
     tokenBalances,
+    marketPrice,
 }: ListModalProps) {
     const { isWeb3Enabled, account, chainId } = useMoralis();
     const [isOkDisabled, setIsOkDisabled] = useState(false);
     const [OptionProps, setOptionProps] = useState<OptionProps[]>();
-    const [token1, setToken1] = useState("");
     const [token2, setToken2] = useState("");
     const [amount, setAmount] = useState("0");
     const [price, setPrice] = useState("0");
@@ -37,19 +38,17 @@ export default function ListModal({
     const [info, setInfo] = useState("");
     const dispatch = useNotification();
 
-    async function updateUI() {
-        await setToken1(tokenNames[index]);
-        await updateOptions();
-        await updateInfo();
-    }
+    useEffect(() => {
+        updateInfo();
+    }, [isWeb3Enabled, OptionProps]);
 
     useEffect(() => {
-        updateUI();
-    }, [isWeb3Enabled, OptionProps]);
+        updateOptions();
+    }, [isWeb3Enabled]);
 
     const updateInfo = async () => {
         setInfo("");
-        if (token1 == token2) {
+        if (tokenNames[index] == token2) {
             setInfo("Info: Can't list same token");
         }
     };
@@ -68,7 +67,16 @@ export default function ListModal({
 
     const listToken = async () => {
         try {
+            if (+tokenBalances[index] - +amount <= 0) {
+                alert("Amount exceeds balance!");
+                return;
+            }
+            if (+amount <= 0 || +price <= 0) {
+                alert("Input should be more than zero!");
+                return;
+            }
             setIsOkDisabled(true);
+
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = provider.getSigner();
             const _chainId: "31337" | "5" = parseInt(chainId!).toString() as "31337" | "5";
@@ -78,7 +86,7 @@ export default function ListModal({
             const p2p = new ethers.Contract(p2pAddress, p2pAbi, signer);
             console.log("listing token");
 
-            const _token1: Token = token1 as Token;
+            const _token1: Token = tokenNames[index] as Token;
             const _token2: Token = token2 as Token;
 
             const token1Addr: string = contractAddresses[_chainId][_token1][0];
@@ -134,7 +142,7 @@ export default function ListModal({
                 onCancel={onClose}
                 onCloseButtonPressed={onClose}
                 onOk={listToken}
-                title={`List ${token1}`}
+                title={`List ${tokenNames[index]}`}
                 width="450px"
                 isCentered={true}
                 isOkDisabled={info === "Info: Can't list same token" ? true : isOkDisabled}
@@ -145,7 +153,7 @@ export default function ListModal({
                         name="Amount"
                         type="text"
                         onChange={(e) => {
-                            if (e.target.value === "" || +e.target.value <= 0) return;
+                            if (e.target.value === "") return;
                             setAmount(e.target.value);
                         }}
                         value={amount}
@@ -154,13 +162,10 @@ export default function ListModal({
                     <Select
                         defaultOptionIndex={0}
                         label="Sell"
-                        onChange={async (OptionProps) => {
-                            setToken1(OptionProps.label.toString());
-                        }}
                         options={[
                             {
-                                id: token1,
-                                label: token1,
+                                id: tokenNames[index],
+                                label: tokenNames[index],
                             },
                         ]}
                         disabled={true}
@@ -171,7 +176,7 @@ export default function ListModal({
                             name="Amount"
                             type="text"
                             onChange={(e) => {
-                                if (e.target.value === "" || +e.target.value <= 0) return;
+                                if (e.target.value === "") return;
                                 setPrice(e.target.value);
                             }}
                             disabled={false}
@@ -203,14 +208,20 @@ export default function ListModal({
                         name="Amount"
                         type="text"
                         onChange={(e) => {
-                            if (e.target.value === "" || +e.target.value <= 0) return;
-                            setLimit(e.target.value);
+                            if (e.target.value === "") setLimit("0");
+                            else setLimit(e.target.value);
                         }}
                         disabled={false}
                     />
                 </div>
-                {/* <div className="pb-6 pt-4">Price in USD: {price}</div> */}
-                <div className="pb-6 pt-4">{info}</div>
+                <div className="pt-4">{info}</div>
+                <div className="pt-4">Market Price: ${marketPrice}</div>
+                <div className="">
+                    Your Balance: {tokenBalances[index]} {tokenNames[index]}
+                </div>
+                <div className="pb-6">
+                    Remaining Balance: {+tokenBalances[index] - +amount} {tokenNames[index]}
+                </div>
             </Modal>
         </div>
     );

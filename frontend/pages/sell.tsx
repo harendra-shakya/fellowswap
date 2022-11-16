@@ -109,40 +109,46 @@ export default function Sell(): JSX.Element {
                     limit: string;
                     seller: string;
                 } = listedToken.activeTokens[i];
-                if (seller !== account) {
-                    setIsLoading(false);
-                    return;
+                if (seller === account) {
+                    const fromToken__ = await new ethers.Contract(fromToken, erc20Abi, signer);
+                    const toToken__ = await new ethers.Contract(toToken, erc20Abi, signer);
+
+                    const deci1 = await fromToken__.decimals();
+                    const deci2 = await toToken__.decimals();
+
+                    const _fromToken: string = await getTokenName(fromToken);
+                    const _toToken: string = await getTokenName(toToken);
+
+                    const _amount = await ethers.utils.formatUnits(amount, deci1);
+                    const _price = await ethers.utils.formatUnits(price, deci2);
+                    const _limit = await ethers.utils.formatUnits(limit, deci1);
+
+                    rows.push([
+                        <Image
+                            src={`/svg/${_fromToken.toLowerCase()}.svg`}
+                            height="45"
+                            width="45"
+                        />,
+                        <Image
+                            src={`/svg/${_toToken.toLowerCase()}.svg`}
+                            height="45"
+                            width="45"
+                        />,
+                        _fromToken,
+                        `${`${_price} ${_toToken} / ${_fromToken}`}`,
+                        `${_amount}`,
+                        `${_limit}`,
+                        <Button
+                            onClick={() => {
+                                cancelListing(fromToken, toToken);
+                            }}
+                            text="Cancel"
+                            theme="colored"
+                            size="large"
+                            color="red"
+                        />,
+                    ]);
                 }
-                const fromToken__ = await new ethers.Contract(fromToken, erc20Abi, signer);
-                const toToken__ = await new ethers.Contract(toToken, erc20Abi, signer);
-
-                const deci1 = await fromToken__.decimals();
-                const deci2 = await toToken__.decimals();
-
-                const _fromToken: string = await getTokenName(fromToken);
-                const _toToken: string = await getTokenName(toToken);
-
-                const _amount = await ethers.utils.formatUnits(amount, deci1);
-                const _price = await ethers.utils.formatUnits(price, deci2);
-                const _limit = await ethers.utils.formatUnits(limit, deci1);
-
-                rows.push([
-                    <Image src={`/svg/${_fromToken.toLowerCase()}.svg`} height="45" width="45" />,
-                    <Image src={`/svg/${_toToken.toLowerCase()}.svg`} height="45" width="45" />,
-                    _fromToken,
-                    `${`${_price} ${_toToken} / ${_fromToken}`}`,
-                    `${_amount}`,
-                    `${_limit}`,
-                    <Button
-                        onClick={() => {
-                            cancelListing(fromToken, toToken);
-                        }}
-                        text="Cancel"
-                        theme="colored"
-                        size="large"
-                        color="red"
-                    />,
-                ]);
             }
 
             setTableData(rows);

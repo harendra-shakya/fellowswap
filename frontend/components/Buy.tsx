@@ -6,7 +6,6 @@ import BuyModal from "./BuyModal";
 import { useQuery, gql } from "@apollo/client";
 import { ethers, Contract, ContractInterface } from "ethers";
 import erc20Abi from "../constants/Token.json";
-import contractAddresses from "../constants/networkMapping.json";
 import { getTokenName } from "../pages/helper";
 import styles from "../styles/Home.module.css";
 

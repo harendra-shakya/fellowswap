@@ -19,7 +19,7 @@ export default function List(): JSX.Element {
     const [tokenAddresses, setTokenAddresses] = useState<string[]>([]);
     const [data, setData] = useState<(string | JSX.Element)[][]>([]);
     const [index, setIndex] = useState<number>(0);
-    // const [price, setPrice] = useState<number>();
+    const [marketPrice, setMarketPrice] = useState<string>();
 
     const tokenNames = ["WBTC", "WETH", "DAI", "USDC"]; // it is just for testing
     // console.log("data", data);
@@ -125,6 +125,7 @@ export default function List(): JSX.Element {
                                 console.log("setting index", i);
                                 setIndex(i);
                                 setShowSellModal(true);
+                                setMarketPrice(prices[i].toString());
                             }}
                             text="List"
                             theme="primary"
@@ -167,6 +168,7 @@ export default function List(): JSX.Element {
                     tokenNames={tokenNames}
                     tokenAddresses={tokenAddresses}
                     tokenBalances={tokenBalances}
+                    marketPrice={marketPrice!}
                 />
             </div>
         </div>

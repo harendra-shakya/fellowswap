@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { Modal, useNotification, Input, Select } from "@web3uikit/core";
 import { useMoralis } from "react-moralis";
-import { ethers, Contract } from "ethers";
-import { OptionProps } from "@web3uikit/core";
+import { ethers } from "ethers";
 import contractAddresses from "../constants/networkMapping.json";
 import p2pAbi from "../constants/P2P.json";
 import erc20Abi from "../constants/Token.json";
@@ -35,7 +34,8 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
     const [availableTokens, setAvailableTokens] = useState("0");
     const [price, setPrice] = useState("0");
     const [limit, setLimit] = useState("0");
-    const [info, setInfo] = useState("");
+    const [userBalance, setUserBalance] = useState("0");
+
     const dispatch = useNotification();
 
     const GET_ACTIVE_ITEMS = gql`
@@ -66,7 +66,7 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
 
     useEffect(() => {
         updateUI();
-    }, [isOkDisabled, isVisible, amount2, listingData]);
+    }, [isOkDisabled, isVisible]);
 
     console.log("price", price);
 
@@ -90,6 +90,10 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
             const deci1 = await token1__.decimals();
             const deci2 = await token2__.decimals();
 
+            setUserBalance(
+                ethers.utils.formatUnits(await token2__.balanceOf(account), deci2).toString()
+            );
+
             setAvailableTokens(ethers.utils.formatUnits(listingData?.amount, deci1).toString());
             console.log(
                 "setting this price",
@@ -110,6 +114,15 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
                 alert("Amount should be more than specified by buyer");
                 return;
             }
+            if (+amount1 <= 0) {
+                alert("Input should be more than zero!");
+                return;
+            }
+            if (+userBalance - +amount2 <= 0) {
+                alert("Amount exceeds balance!");
+                return;
+            }
+
             setIsOkDisabled(true);
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = provider.getSigner();
@@ -200,7 +213,7 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
                 title={`Buy ${token1}`}
                 width="450px"
                 isCentered={true}
-                isOkDisabled={isOkDisabled}
+                isOkDisabled={isOkDisabled || loading}
             >
                 <div>
                     <div
@@ -217,7 +230,7 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
                             name="Amount"
                             type="text"
                             onChange={(e) => {
-                                if (e.target.value === "" || +e.target.value <= 0) return;
+                                if (e.target.value === "") return;
                                 updateInputs(e.target.value);
                             }}
                             value={amount1}
@@ -242,12 +255,21 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
                         />
                     </div>
                 </div>
-                <div className="pt-4">Price: {price}</div>
+
+                <div className="pt-8">Price: {price}</div>
                 <div className="">Available: {availableTokens}</div>
                 <div className="">
                     Minimum Buy: {limit} {token1}
                 </div>
+
                 <div className="pb-6">Seller: {listingData?.seller}</div>
+
+                <div className="">
+                    Your Balance: {userBalance} {token2}
+                </div>
+                <div className="pb-6">
+                    Ramaining Balance: {+userBalance - +amount2} {token2}
+                </div>
             </Modal>
         </div>
     );
