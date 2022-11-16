@@ -105,29 +105,32 @@ export default function List(): JSX.Element {
             // console.log("prices", prices);
 
             for (let i = 0; i < tokenNames.length; i++) {
-                if (+tokenBalances[i] <= 0) return;
-
-                // console.log("-------------------------------------------");
-                // console.log("tokenN", token);
-                // const price = await getMarketPrice(token.toUpperCase());
-                // console.log("and here is the price", price);
-                // console.log("-------------------------------------------");
-                rows.push([
-                    <Image src={`/${tokenNames[i].toLowerCase()}.svg`} height="45" width="45" />,
-                    tokenNames[i].toUpperCase().toString(),
-                    `${tokenBalances[i]}`,
-                    `$${prices[i]}`,
-                    <Button
-                        onClick={() => {
-                            console.log("setting index", i);
-                            setIndex(i);
-                            setShowSellModal(true);
-                        }}
-                        text="List"
-                        theme="primary"
-                        size="large"
-                    />,
-                ]);
+                if (+tokenBalances[i] > 0)
+                    // console.log("-------------------------------------------");
+                    // console.log("tokenN", token);
+                    // const price = await getMarketPrice(token.toUpperCase());
+                    // console.log("and here is the price", price);
+                    // console.log("-------------------------------------------");
+                    rows.push([
+                        <Image
+                            src={`/${tokenNames[i].toLowerCase()}.svg`}
+                            height="45"
+                            width="45"
+                        />,
+                        tokenNames[i].toUpperCase().toString(),
+                        `${tokenBalances[i]}`,
+                        `$${prices[i]}`,
+                        <Button
+                            onClick={() => {
+                                console.log("setting index", i);
+                                setIndex(i);
+                                setShowSellModal(true);
+                            }}
+                            text="List"
+                            theme="primary"
+                            size="large"
+                        />,
+                    ]);
             }
 
             setData(rows);

@@ -21,7 +21,7 @@ export default function Sell(): JSX.Element {
     const [isOkDisabled, setIsOkDisabled] = useState<boolean>(false);
     const dispatch = useNotification();
 
-    const supportedNetworks = [80001, 5];
+    const supportedNetworks = [80001];
 
     const GET_ACTIVE_ITEMS = gql`
         {

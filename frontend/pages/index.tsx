@@ -5,7 +5,7 @@ import { NextPage } from "next";
 export default function Home(): JSX.Element {
     const { isWeb3Enabled, chainId, account } = useMoralis();
 
-    const supportedNetworks = [80001, 5];
+    const supportedNetworks = [80001];
 
     return (
         <div>

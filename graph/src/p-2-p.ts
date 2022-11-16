@@ -114,13 +114,7 @@ export function handleBuyToken(event: BuyTokenEvent): void {
       event.params.toToken
     )
   );
-  let activeItem = ActiveToken.load(
-    getIdFromEventParams(
-      event.params.seller,
-      event.params.fromToken,
-      event.params.toToken
-    )
-  );
+
   if (!itemBought) {
     itemBought = new TokenBought(
       getIdFromEventParams(
@@ -138,19 +132,13 @@ export function handleBuyToken(event: BuyTokenEvent): void {
   itemBought.boughtTokens = event.params.boughtTokens;
   itemBought.soldToken = event.params.soldToken;
 
-  activeItem!.buyer = event.params.buyer;
-
   itemBought.save();
-  activeItem!.save();
 }
-
-let counter = 0;
 
 function getIdFromEventParams(
   seller: Address,
   fromToken: Address,
   toToken: Address
 ): string {
-  counter++;
   return seller.toHexString() + fromToken.toHexString() + toToken.toHexString();
 }

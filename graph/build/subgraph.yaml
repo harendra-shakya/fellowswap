@@ -6,9 +6,9 @@ dataSources:
     name: P2P
     network: mumbai
     source:
-      address: "0x7213b36646dAE6f9A42c22CCb25Aae4d34FF56b8"
+      address: "0x2C6EBA0e1b75ea8CE6e2Fcc65a6c7D3a4296300f"
       abi: P2P
-      startBlock: 29180510
+      startBlock: 29181358
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6

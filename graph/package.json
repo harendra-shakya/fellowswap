@@ -1,13 +1,13 @@
 {
-  "name": "fellowswap",
+  "name": "fellowswap-2",
   "license": "UNLICENSED",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ harendra-shakya/fellowswap",
-    "create-local": "graph create --node http://localhost:8020/ harendra-shakya/fellowswap",
-    "remove-local": "graph remove --node http://localhost:8020/ harendra-shakya/fellowswap",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 harendra-shakya/fellowswap",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ harendra-shakya/fellowswap-2",
+    "create-local": "graph create --node http://localhost:8020/ harendra-shakya/fellowswap-2",
+    "remove-local": "graph remove --node http://localhost:8020/ harendra-shakya/fellowswap-2",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 harendra-shakya/fellowswap-2",
     "test": "graph test"
   },
   "dependencies": {

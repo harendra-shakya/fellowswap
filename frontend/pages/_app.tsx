@@ -9,7 +9,7 @@ import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
 
 const client = new ApolloClient({
     cache: new InMemoryCache(),
-    uri: "https://api.thegraph.com/subgraphs/name/harendra-shakya/p2p",
+    uri: "https://api.thegraph.com/subgraphs/name/harendra-shakya/fellowswap-2",
 });
 
 function MyApp({ Component, pageProps }: AppProps) {

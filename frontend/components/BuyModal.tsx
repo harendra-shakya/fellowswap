@@ -95,8 +95,6 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
             );
             setPrice(ethers.utils.formatUnits(listingData?.price.toString(), deci2).toString());
             setLimit(ethers.utils.formatUnits(listingData?.limit, deci1).toString());
-
-            setIsOkDisabled(false);
         } catch (e) {
             console.log(e);
             console.log("this error is comming from updateprices");
@@ -106,6 +104,10 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
 
     const buyToken = async () => {
         try {
+            if (+limit > +amount1) {
+                alert("Amount should be more than specified by buyer");
+                return;
+            }
             setIsOkDisabled(true);
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = provider.getSigner();
@@ -230,7 +232,9 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
                 </div>
                 <div className="pt-4">Price: {price}</div>
                 <div className="">Available: {availableTokens}</div>
-                <div className="">Minimum Buy: {limit}</div>
+                <div className="">
+                    Minimum Buy: {limit} {token1}
+                </div>
                 <div className="pb-6">Seller: {listingData?.seller}</div>
             </Modal>
         </div>
