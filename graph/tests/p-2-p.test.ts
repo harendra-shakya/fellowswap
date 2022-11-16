@@ -8,7 +8,7 @@ import {
 } from "matchstick-as";
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { ExampleEntity } from "../generated/schema";
-import { BuyToken } from "../generated/p2p/p2p";
+import { BuyToken } from "../generated/P2P/P2P";
 import { handleBuyToken } from "../src/p-2-p";
 import { createBuyTokenEvent } from "./p-2-p-utils";
 

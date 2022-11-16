@@ -3,12 +3,12 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: p2p
+    name: P2P
     network: mumbai
     source:
-      address: "0x1dbab3b2ff5C475B31396289B4aD3c7646E6849F"
-      abi: p2p
-      startBlock: 29146371
+      address: "0x7213b36646dAE6f9A42c22CCb25Aae4d34FF56b8"
+      abi: P2P
+      startBlock: 29180510
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -18,8 +18,8 @@ dataSources:
         - CancelListing
         - ListToken
       abis:
-        - name: p2p
-          file: ./abis/p2p.json
+        - name: P2P
+          file: ./abis/P2P.json
       eventHandlers:
         - event: BuyToken(indexed address,indexed address,indexed address,address,uint256,uint256)
           handler: handleBuyToken

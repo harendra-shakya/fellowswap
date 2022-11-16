@@ -1,10 +1,9 @@
-import { p2p, BuyToken, CancelListing, ListToken } from "../generated/p2p/p2p";
-import { BigInt, Address } from "@graphprotocol/graph-ts";
+import { Address } from "@graphprotocol/graph-ts";
 import {
   BuyToken as BuyTokenEvent,
   CancelListing as CancelListingEvent,
   ListToken as ListTokenEvent,
-} from "../generated/p2p/p2p";
+} from "../generated/P2P/P2P";
 import {
   TokenListed,
   ActiveToken,

@@ -112,7 +112,7 @@ export class ListToken__Params {
   }
 }
 
-export class p2p__getListingResultListingStruct extends ethereum.Tuple {
+export class P2P__getListingResultListingStruct extends ethereum.Tuple {
   get price(): BigInt {
     return this[0].toBigInt();
   }
@@ -130,16 +130,16 @@ export class p2p__getListingResultListingStruct extends ethereum.Tuple {
   }
 }
 
-export class p2p extends ethereum.SmartContract {
-  static bind(address: Address): p2p {
-    return new p2p("p2p", address);
+export class P2P extends ethereum.SmartContract {
+  static bind(address: Address): P2P {
+    return new P2P("P2P", address);
   }
 
   getListing(
     _seller: Address,
     _fromToken: Address,
     _toToken: Address
-  ): p2p__getListingResultListingStruct {
+  ): P2P__getListingResultListingStruct {
     let result = super.call(
       "getListing",
       "getListing(address,address,address):((uint256,uint256,uint256,address))",
@@ -150,14 +150,14 @@ export class p2p extends ethereum.SmartContract {
       ]
     );
 
-    return changetype<p2p__getListingResultListingStruct>(result[0].toTuple());
+    return changetype<P2P__getListingResultListingStruct>(result[0].toTuple());
   }
 
   try_getListing(
     _seller: Address,
     _fromToken: Address,
     _toToken: Address
-  ): ethereum.CallResult<p2p__getListingResultListingStruct> {
+  ): ethereum.CallResult<P2P__getListingResultListingStruct> {
     let result = super.tryCall(
       "getListing",
       "getListing(address,address,address):((uint256,uint256,uint256,address))",
@@ -172,7 +172,7 @@ export class p2p extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<p2p__getListingResultListingStruct>(value[0].toTuple())
+      changetype<P2P__getListingResultListingStruct>(value[0].toTuple())
     );
   }
 }
