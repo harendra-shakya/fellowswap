@@ -7,6 +7,7 @@ import p2pAbi from "../constants/P2P.json";
 import erc20Abi from "../constants/Token.json";
 import { getTokenName } from "./helper";
 import { useQuery, gql } from "@apollo/client";
+import { Web3Storage } from "web3.storage";
 
 declare var window: any;
 
@@ -27,14 +28,14 @@ type BuyModalProps = {
 export default function BuyModal({ isVisible, onClose, listingData, index }: BuyModalProps) {
     const { isWeb3Enabled, account, chainId } = useMoralis();
     const [isOkDisabled, setIsOkDisabled] = useState(false);
-    const [amount1, setAmount1] = useState("0");
-    const [amount2, setAmount2] = useState("0");
-    const [token1, setToken1] = useState("");
-    const [token2, setToken2] = useState("");
-    const [availableTokens, setAvailableTokens] = useState("0");
-    const [price, setPrice] = useState("0");
-    const [limit, setLimit] = useState("0");
-    const [userBalance, setUserBalance] = useState("0");
+    const [amount1, setAmount1] = useState<string>("0");
+    const [amount2, setAmount2] = useState<string>("0");
+    const [token1, setToken1] = useState<string>("");
+    const [token2, setToken2] = useState<string>("");
+    const [availableTokens, setAvailableTokens] = useState<string>("0");
+    const [price, setPrice] = useState<string>("0");
+    const [limit, setLimit] = useState<string>("0");
+    const [userBalance, setUserBalance] = useState<string>("0");
 
     const dispatch = useNotification();
 
@@ -108,6 +109,36 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
         }
     };
 
+    // * Saving transaction data on ipfs for backup
+    const saveOnIpfs = async () => {
+        try {
+            console.log("saving data on ipfs for backup...");
+            const token = process.env.NEXT_PUBLIC_API_TOKEN!;
+            // console.log("api token", token);
+            const client = await new Web3Storage({ token });
+
+            const object = {
+                soldTokenAddr: listingData?.toToken.toString(),
+                boughtTokenAddr: listingData?.fromToken.toString(),
+                boughtTokens: `${amount1} ${token1}`,
+                price: `${price} `,
+                soldTokens: `${amount2} ${token2}`,
+                seller: listingData?.seller.toString(),
+                buyer: account,
+            };
+
+            const blob = new Blob([JSON.stringify(object)], {
+                type: "application/json",
+            });
+            const files = [new File([blob], `${account}.json`)];
+            const cid = await client.put(files);
+            // console.log("cid", cid);
+            console.log("data stored on ipfs via web3 storage");
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
     const buyToken = async () => {
         try {
             if (+limit > +amount1) {
@@ -170,6 +201,7 @@ export default function BuyModal({ isVisible, onClose, listingData, index }: Buy
             txReceipt = await tx.wait();
             if (txReceipt.status === 1) {
                 handleBuySuccess();
+                await saveOnIpfs();
             } else {
                 alert("Tx failed. Plz try agains!");
             }
