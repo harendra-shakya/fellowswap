@@ -12,11 +12,13 @@ import {BaseSetup} from "./BaseSetup.t.sol";
 contract BuyTokenTest is BaseSetup {
     function setUp() public virtual override {
         BaseSetup.setUp();
-        p2p.listToken(address(weth), address(dai), PRICE, AMOUNT, LIMIT);
     }
 
     function testRevertIfAmountIsLessThanLimit() public {
         this.setUp();
+        vm.startPrank(user);
+        p2p.listToken(address(weth), address(dai), PRICE, AMOUNT, LIMIT);
+        vm.stopPrank();
         vm.prank(user2);
         vm.expectRevert(abi.encodePacked("P2P: Out of limit"));
         p2p.buyToken(address(dai), address(weth), user, 2 ether);
@@ -24,6 +26,9 @@ contract BuyTokenTest is BaseSetup {
 
     function testRevertIfNotListed() public {
         this.setUp();
+        vm.startPrank(user);
+        p2p.listToken(address(weth), address(dai), PRICE, AMOUNT, LIMIT);
+        vm.stopPrank();
         vm.prank(user2);
         vm.expectRevert(abi.encodePacked("P2P: Not listed"));
         p2p.buyToken(address(dai), address(usdc), user, 3 ether);
@@ -31,6 +36,9 @@ contract BuyTokenTest is BaseSetup {
 
     function testBuyToken() public {
         this.setUp();
+        vm.startPrank(user);
+        p2p.listToken(address(weth), address(dai), PRICE, AMOUNT, LIMIT);
+        vm.stopPrank();
         uint256 wethAmount = 4 ether;
         uint256 daiAmount = 4 * 1200 ether; // 1 weth = 1200 dai
 
@@ -54,9 +62,9 @@ contract BuyTokenTest is BaseSetup {
 
     function testBuyWithUSDC() public {
         this.setUp();
+        vm.startPrank(user);
         uint256 usdcPrice = 1200 * 10**6; // 1 weth = 1200 usdc
         p2p.listToken(address(weth), address(usdc), usdcPrice, AMOUNT, LIMIT);
-        vm.startPrank(user);
         uint256 wethAmount = 4 ether;
         uint256 usdcAmount = 4 * usdcPrice;
 
@@ -103,9 +111,10 @@ contract BuyTokenTest is BaseSetup {
     function testFuzzingBuyWithUSDC(uint256 amount) public {
         vm.assume(amount >= 3 && amount <= 10);
         this.setUp();
+        vm.startPrank(user);
+
         uint256 usdcPrice = 1200 * 10**6; // 1 weth = 1200 usdc
         p2p.listToken(address(weth), address(usdc), usdcPrice, AMOUNT, LIMIT);
-        vm.startPrank(user);
         uint256 wethAmount = amount * 10**18;
         uint256 usdcAmount = amount * usdcPrice;
 
@@ -156,6 +165,8 @@ contract BuyTokenTest is BaseSetup {
         uint256 wethAmount = amount * 10**18;
         uint256 daiAmount = amount * 1200 ether; // 1 weth = 1200 dai
         vm.startPrank(user);
+        p2p.listToken(address(weth), address(dai), PRICE, AMOUNT, LIMIT);
+
         weth.approve(address(p2p), wethAmount);
         vm.stopPrank();
         vm.startPrank(user2);

@@ -12,19 +12,20 @@ import {BaseSetup} from "./BaseSetup.t.sol";
 contract BuyTokenTest is BaseSetup {
     function setUp() public virtual override {
         BaseSetup.setUp();
-        p2p.listToken(address(weth), address(dai), PRICE, AMOUNT, LIMIT);
     }
 
     function testRevertIfNotListed() public {
         this.setUp();
-        vm.prank(user2);
+        vm.startPrank(user);
         vm.expectRevert(abi.encodePacked("P2P: Not listed"));
         p2p.cancelListing(address(weth), address(dai));
+        vm.stopPrank();
     }
 
     function testCancelListing() public {
         this.setUp();
-        vm.prank(user);
+        vm.startPrank(user);
+        p2p.listToken(address(weth), address(dai), PRICE, AMOUNT, LIMIT);
         P2P.Listing memory listing = p2p.getListing(user, address(weth), address(dai));
         assertEq(listing.seller, user);
 
@@ -32,5 +33,6 @@ contract BuyTokenTest is BaseSetup {
         listing = p2p.getListing(user, address(weth), address(dai));
 
         assertEq(listing.seller, address(0));
+        vm.stopPrank();
     }
 }

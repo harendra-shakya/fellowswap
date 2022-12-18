@@ -17,7 +17,7 @@ contract BaseSetup is Test {
     uint256 public constant PRICE = 1200 ether;
     uint256 public constant AMOUNT = 10 ether;
     uint256 public constant LIMIT = 3 ether;
-    address public user = 0xb4c79daB8f259C7Aee6E5b2Aa729821864227e84;
+    address public user = address(0x1);
     address public user2 = address(0x2);
 
     function setUp() public virtual {
