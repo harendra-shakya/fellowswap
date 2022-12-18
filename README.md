@@ -12,21 +12,4 @@ Then users can buy tokens directly from the seller. A user can compare different
 
 All the main three functions Listing, buying, and canceling token emits an event that is indexed by the graph that shows the data to users cheaply.
 
-## How I built it
-
-FellowSwap is a decentralized protocol. I have gone to every extent possible in this time frame to make this whole protocol decentralized. Decentralization was achieved by using different technologies. These are the following Technologies we have used in the FellowSwap:-
-
-- **Polygon(Sponsor)** - Project Deployed on Polygon testnet.
-- **Chainlink** - Used chainlink Data feeds for showing real-time prices on frontend.
-- **Web3 Storage/IPFS(Sponsor)** - Tx data is also being stored on IPFS for backup
-- **Solidity** - Language for writing smart contract
-- **Foundry**- For testing
-- **The Graph** - For indexing data
-- **Hardhat**- For deploying
-- **Typescript** - Typescript is used for writing frontend code.
-- **Next js** - Helped in building frontend efficiently.
-- **Ethers** - Library to interact with the blockchain
-- **Tailwindcss** - Helped in building ui
-- **Web3 UI kit** - Helped in building ui
-
-I developed all the Smart Contracts with Solidity. These contracts are thoroughly tested by building different tests using Foundry and later deployed on the Polygon Testnet with hardhat. I used the graph for indexing data. Next.js helped in building a serverless client side and chainlink helped me to show real-time prices on frontend.
+[Live Server](https://fellowswap.vercel.app/)
