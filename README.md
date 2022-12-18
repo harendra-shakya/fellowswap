@@ -30,15 +30,3 @@ FellowSwap is a decentralized protocol. I have gone to every extent possible in 
 - **Web3 UI kit** - Helped in building ui
 
 I developed all the Smart Contracts with Solidity. These contracts are thoroughly tested by building different tests using Foundry and later deployed on the Polygon Testnet with hardhat. I used the graph for indexing data. Next.js helped in building a serverless client side and chainlink helped me to show real-time prices on frontend.
-
-## Challenges I ran into
-
-I ran into many challenges like in starting I wanted to try something new so I tested contracts with foundry, I faced many bugs but I resolved them. And another problem came my way to how to display real-time market prices of tokens for FREE without adding anything to my contracts and that's why I built [Linkit](https://github.com/harendra-shakya/linkit).
-
-## What I learned
-
-While building this I learned how to use foundry for testing. I also learned a lot from chainlink technical workshops. And also the most important lesson is that when you're are working on a problem you can also find a new problem and solve it. Just like I stuck into the problem and built [Linkit](https://github.com/harendra-shakya/linkit).
-
-## What's next for FellowSwap
-
-It is just an MVP and it still requires many features to make the user experience better like notification service, sorting tokens etc. And will try to get funds and work on it to launch on mainnet because I know p2p and 15x less fee than uniswap is a good idea I guess.
