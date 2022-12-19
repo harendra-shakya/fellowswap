@@ -132,7 +132,7 @@ contract P2P is ReentrancyGuard {
             _fromToken,
             msg.sender,
             address(this),
-            (listing.price * _amount) / decimals
+            (listing.price * _amount) / decimals // this is important as we are passing token amount with decimals as if we pass amount without decimals then they won't be able to buy tokens in decimals e.g. 0.001 BTC
         ); // buyer -> contract
         TransferHelpers.safeTranferFrom(_toToken, _seller, address(this), _amount); // seller -> contract
 

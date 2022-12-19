@@ -15,19 +15,13 @@ const deployFunction: DeployFunction = async ({ getNamedAccounts, deployments })
         : VERIFICATION_BLOCK_CONFIRMATIONS;
 
     log("-----------------------------------------------------------");
-    log("deploying......");
+    log(`deploying on ${network.name}......`);
 
+    // Note: P2P = fellowswap
     const p2p = await deploy("P2P", {
         from: deployer,
         log: true,
         args: [],
-        waitConfirmations: waitConfirmations,
-    });
-
-    await deploy("GenericERC20", {
-        from: deployer,
-        log: true,
-        args: ["MOCK", "MOCK", 18],
         waitConfirmations: waitConfirmations,
     });
 
@@ -36,11 +30,12 @@ const deployFunction: DeployFunction = async ({ getNamedAccounts, deployments })
     if (
         !developmentChains.includes(network.name) &&
         process.env.ETHERSCAN_API_KEY &&
-        process.env.POLYGONSCAN_API_KEY
+        process.env.POLYGONSCAN_API_KEY &&
+        process.env.FTMSCAN_API_KEY
     ) {
-        log("veryfying.....");
+        log(`verifying on ${network.name} Etherscan.....`);
         await verify(p2p.address, []);
-        log("veryfied!");
+        log("verified!");
     }
 };
 

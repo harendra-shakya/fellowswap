@@ -17,6 +17,7 @@ const GOERLI_RPC_URL = process.env.GOERLI_RPC_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY;
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY;
+const FTMSCAN_API_KEY = process.env.FTMSCAN_API_KEY;
 
 const REPORT_GAS = process.env.REPORT_GAS || false;
 
@@ -45,11 +46,19 @@ const config: HardhatUserConfig = {
             saveDeployments: true,
             chainId: 5,
         },
+
+        ftmTestnet: {
+            url: `https://rpc.testnet.fantom.network`,
+            accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
+            saveDeployments: true,
+            chainId: 4002,
+        },
     },
     etherscan: {
         apiKey: {
             goerli: ETHERSCAN_API_KEY!,
             polygonMumbai: POLYGONSCAN_API_KEY!,
+            ftmTestnet: FTMSCAN_API_KEY!,
         },
     },
     gasReporter: {
