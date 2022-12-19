@@ -12,4 +12,5 @@ Then users can buy tokens directly from the seller. A user can compare different
 
 All the main three functions Listing, buying, and canceling token emits an event that is indexed by the graph that shows the data to users cheaply.
 
-[Live Server](https://fellowswap.vercel.app/)
+[Live Server](https://fellowswap.vercel.app/) (Deployed on [Polygon testnet](https://mumbai.polygonscan.com/address/0x43e2e60228457E79bb8CeF680d738A404B0Ab2aA#contracts) and [Fantom testnet](https://testnet.ftmscan.com/address/0x10d5809623e57fa3e213F3eC92f2FF4834f0aBb7#code))
+Note: Fellowswap's contract name is P2P.
